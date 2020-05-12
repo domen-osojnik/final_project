@@ -1,0 +1,18 @@
+<nav mat-tab-nav-bar [backgroundColor]="background">
+  <div class="title">
+    MZP
+    <span class="material-icons">
+      drive_eta
+    </span>
+  </div>
+  <a
+    mat-tab-link
+    *ngFor="let link of navLinks"
+    [routerLink]="link.link"
+    routerLinkActive
+    #rla="routerLinkActive"
+    [active]="rla.isActive"
+  >
+    {{ link.label }}
+  </a>
+</nav>
