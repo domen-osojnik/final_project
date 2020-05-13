@@ -17,15 +17,19 @@ export class HeaderComponent implements OnInit {
         {
             label: 'Info',
             link: './info',
-            index: 0
+            index: 0,
+            image: 'help_outline'
         }, {
             label: 'Dashboard',
             link: './dashboard',
-            index: 1
+            index: 1,
+            
+            image: 'commute'
         }, {
             label: 'Road information',
             link: './driveInfo',
-            index: 2
+            index: 2,
+            image: 'track_changes'
         }, 
     ];
 }
