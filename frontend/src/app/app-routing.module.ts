@@ -11,7 +11,7 @@ const routes: Routes = [
   { path: 'dashboard', component: DashboardComponent },
   { path: 'info', component: InfoComponent },
   { path: '',
-    redirectTo: '/',
+    redirectTo: '/info',
     pathMatch: 'full' },
   { path: '**', component: DoesNotExistComponent }
 ];
