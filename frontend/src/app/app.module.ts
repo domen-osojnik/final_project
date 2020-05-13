@@ -17,6 +17,10 @@ import { DashboardComponent } from './tabs/dashboard/dashboard.component';
 import { DriveInformationComponent } from './tabs/drive-information/drive-information.component';
 import { DoesNotExistComponent } from './info-pages/does-not-exist/does-not-exist.component';
 import { InfoComponent } from './tabs/info/info.component';
+import { GoogleMapsModule } from '@angular/google-maps'
+import {MatCardModule} from '@angular/material/card';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatListModule} from '@angular/material/list';
 
 
 @NgModule({
@@ -39,7 +43,11 @@ import { InfoComponent } from './tabs/info/info.component';
     MatNativeDateModule,
     BrowserAnimationsModule,
     MatButtonModule,
-    MatTabsModule
+    MatTabsModule,
+    GoogleMapsModule, 
+    MatCardModule,
+    MatDividerModule,
+    MatListModule
   ],
   providers: [],
   bootstrap: [AppComponent]
