@@ -9,9 +9,11 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.util.Log;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
-
+    public final static String TAG = "STATUS";
     private float lastX, lastY, lastZ;
 
     private SensorManager sensorManager;
@@ -25,8 +27,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float deltaY = 0;
     private float deltaZ = 0;
 
-    private float vibrateThreshold = 0;
+    private TextView currentX;
 
+    private float vibrateThreshold = 0;
 
     public Vibrator v;
 
@@ -34,6 +37,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initializeViews();
 
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
@@ -43,12 +48,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
             vibrateThreshold = accelerometer.getMaximumRange() / 2;
         } else {
-            // fai! we dont have an accelerometer!
+            Log.d(TAG, "Pospeškometer ne obstaja na tej napravi!");
         }
 
         //initialize vibration
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
+    }
+
+    public void initializeViews() {
+        currentX = (TextView) findViewById(R.id.AccelerationX);
     }
 
 
@@ -71,6 +80,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        // clean current values
+        displayCleanValues();
+        // display the current x,y,z accelerometer values
+        displayCurrentValues();
+
         // get the change of the x,y,z values of the accelerometer
         deltaX = Math.abs(lastX - event.values[0]);
         deltaY = Math.abs(lastY - event.values[1]);
@@ -84,5 +98,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if ((deltaZ > vibrateThreshold) || (deltaY > vibrateThreshold) || (deltaZ > vibrateThreshold)) {
             v.vibrate(50);
         }
+    }
+
+    public void displayCleanValues() {
+        currentX.setText("0.0");
+    }
+
+    // display the current x,y,z accelerometer values
+    public void displayCurrentValues() {
+        currentX.setText(Float.toString(deltaX));
     }
 }
