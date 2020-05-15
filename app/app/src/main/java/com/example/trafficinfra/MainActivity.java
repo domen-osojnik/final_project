@@ -74,8 +74,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //initialize vibration
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
-
-
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         longitude = (TextView) this.findViewById(R.id.longitude);
         latitude = (TextView) this.findViewById(R.id.latitude);
@@ -94,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                         public void onSuccess(Location location) {
                             latitude.setText("latitude: "+ String.valueOf(location.getLatitude()));
                             longitude.setText("longitude: "+ String.valueOf(location.getLongitude()));
+                            Log.v(TAG, String.valueOf(location.getSpeed()));
                             if (location != null) {
                                 // Logic to handle location object
                             }
