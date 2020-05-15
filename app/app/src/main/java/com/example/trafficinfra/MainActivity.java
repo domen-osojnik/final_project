@@ -1,14 +1,29 @@
 package com.example.trafficinfra;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Address;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
+
+import java.text.CollationElementIterator;
+import java.util.Locale;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -33,6 +48,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public Vibrator v;
 
+    private FusedLocationProviderClient fusedLocationClient;
+    TextView latitude;
+    TextView longitude;
+    private int locationRequestCode = 1000;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +74,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //initialize vibration
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        longitude = (TextView) this.findViewById(R.id.longitude);
+        latitude = (TextView) this.findViewById(R.id.latitude);
+
+        // check permission
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ){
+            // reuqest for permission
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    locationRequestCode);
+
+
+        } else {
+            fusedLocationClient.getLastLocation()
+                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            latitude.setText("latitude: "+ String.valueOf(location.getLatitude()));
+                            longitude.setText("longitude: "+ String.valueOf(location.getLongitude()));
+                            Log.v(TAG, String.valueOf(location.getSpeed()));
+                            if (location != null) {
+                                // Logic to handle location object
+                            }
+                        }
+                    });
+        }
     }
 
     public void initializeViews() {
