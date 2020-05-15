@@ -34,6 +34,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private SensorManager sensorManager;
     private Sensor accelerometer;
 
+    // Gyroscope properties
+    private Sensor gyro;
+    private float[] rotationMatrix;
+
     private float deltaXMax = 0;
     private float deltaYMax = 0;
     private float deltaZMax = 0;
@@ -42,7 +46,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float deltaY = 0;
     private float deltaZ = 0;
 
+    // Gyroscope sensor values
+    private float _gyroPosX;
+    private float _gyroPosY;
+    private float _gyroPosZ;
+
+    // Views - UI
     private TextView currentX;
+    private TextView gyroPosX;
+    private TextView gyroPosY;
+    private TextView gyroPosZ;
 
     private float vibrateThreshold = 0;
 
@@ -55,12 +68,29 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        // auto generated
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         initializeViews();
 
+        // Initialize sensor manager
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        // Initialize gyro
+        this.gyro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+        this.rotationMatrix = new float[16];
+
+        // Check if device has gyroscope
+        if (this.gyro == null) {
+            Log.d(TAG, ">... Application requires a gyroscope to run");
+            finish();
+        }
+
+        //  Register listener for gyroscope
+        sensorManager.registerListener(this, gyro, SensorManager.SENSOR_DELAY_NORMAL);
+
+        // Initialize accelerometer
         if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
             // success! we have an accelerometer
 
@@ -103,6 +133,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public void initializeViews() {
         currentX = (TextView) findViewById(R.id.AccelerationX);
+        gyroPosX = (TextView) findViewById(R.id.gyroPosX);
+        gyroPosY = (TextView) findViewById(R.id.gyroPosY);
+        gyroPosZ = (TextView) findViewById(R.id.gyroPosZ);
     }
 
 
@@ -110,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     protected void onResume() {
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, gyro, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     //onPause() unregister the accelerometer for stop listening the events
@@ -125,32 +159,56 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-        // clean current values
-        displayCleanValues();
-        // display the current x,y,z accelerometer values
-        displayCurrentValues();
 
-        // get the change of the x,y,z values of the accelerometer
-        deltaX = Math.abs(lastX - event.values[0]);
-        deltaY = Math.abs(lastY - event.values[1]);
-        deltaZ = Math.abs(lastZ - event.values[2]);
+        // Triggered event
+        Sensor sensor = event.sensor;
 
-        // if the change is below 2, it is just plain noise
-        if (deltaX < 2)
-            deltaX = 0;
-        if (deltaY < 2)
-            deltaY = 0;
-        if ((deltaZ > vibrateThreshold) || (deltaY > vibrateThreshold) || (deltaZ > vibrateThreshold)) {
-            v.vibrate(50);
+        if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            // clean current values
+            displayCleanValues();
+            // display the current x,y,z accelerometer values
+            displayCurrentValues();
+
+            // get the change of the x,y,z values of the accelerometer
+            deltaX = Math.abs(lastX - event.values[0]);
+            deltaY = Math.abs(lastY - event.values[1]);
+            deltaZ = Math.abs(lastZ - event.values[2]);
+
+            // if the change is below 2, it is just plain noise
+            if (deltaX < 2)
+                deltaX = 0;
+            if (deltaY < 2)
+                deltaY = 0;
+            if ((deltaZ > vibrateThreshold) || (deltaY > vibrateThreshold) || (deltaZ > vibrateThreshold)) {
+                v.vibrate(50);
+            }
+        }
+        else if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+            // Event was triggered by gyroscope
+            SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
+
+            _gyroPosX = event.values[0];
+            _gyroPosY = event.values[1];
+            _gyroPosZ = event.values[2];
+            //  ...
         }
     }
 
     public void displayCleanValues() {
+        // accelerometer
         currentX.setText("0.0");
+
+        // gyroscope
+        gyroPosX.setText("0");
+        gyroPosY.setText("0");
+        gyroPosZ.setText("0");
     }
 
     // display the current x,y,z accelerometer values
     public void displayCurrentValues() {
         currentX.setText(Float.toString(deltaX));
+        gyroPosX.setText("X : " + _gyroPosX);
+        gyroPosY.setText("Y : " + _gyroPosY);
+        gyroPosZ.setText("Z : " + _gyroPosZ);
     }
 }
