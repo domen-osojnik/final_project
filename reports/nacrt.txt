@@ -1,0 +1,26 @@
+
+Nacrt projekta:
+
+Ekipa:
+-Alen Poklic
+-Domen Osojnik
+-Gal Glogovšek
+
+Izbrani modul: Prometna infrastruktura
+
+Skrejpamo iz:
+- https://www.promet.si/portal/sl/razmere.aspx
+- https://www.promet.si/portal/sl/cestne-kamere.aspx
+
+Spletna Aplikacija (backend: nodejs(express) frontend(Angular))
+Podatkovna baza: mongoDB
+
+Domaca stran: Zemljevid (google maps) okno, na njem dogodki kot ikone (prometna nesreca, zapora, zastoj, delo na cesti)
+Ti podatki se skrejpajo direktno iz https://www.promet.si/portal/sl/razmere.aspx,
+Skrejpamo (python ali nodejs) tudi slike cestnih kamer iz https://www.promet.si/portal/sl/cestne-kamere.aspx,7
+
+Dodatni zavihek: live zajemanje vožnje, zaznavanje prometnih znakov s pomocjo opencv(znacilnice),
+glede na to, zajemanje morebitnih prekrškov (prekoracena hitrost itd.) in stanja vozišca (dobro/slabo)
+s pomocjo pospeškometra in drugih senzorjev na mobilni napravi. Prikaz vsega tega na tem zavihku.
+
+
