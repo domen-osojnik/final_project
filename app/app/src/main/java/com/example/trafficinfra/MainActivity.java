@@ -303,19 +303,20 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (Math.abs(this._gyroPosX - Math.abs(val1)) > thresh) {
             //Log.d(TAG, "Gyroscope x-axis pos change detected");
             this._gyroPosX = Math.abs(val1);
-            if(isRecording) this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), deg);
+            //public SensorData(double Lat, double Long, float speed, int shakeDegree) {
+            if(isRecording) this.readings.addData(new SensorData(loc.getLatitude(), loc.getLongitude(), loc.getSpeed(), deg));
             return true;
 
         } else if (Math.abs(this._gyroPosY - Math.abs(val2)) > thresh) {
             //Log.d(TAG, "Gyroscope y-axis pos change detected");
             this._gyroPosY = Math.abs(val2);
-            if(isRecording) this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), deg);
+            if(isRecording) this.readings.addData(new SensorData(loc.getLatitude(), loc.getLongitude(), loc.getSpeed(), deg));
             return true;
 
         } else if (Math.abs(this._gyroPosZ - Math.abs(val3)) > thresh) {
             //Log.d(TAG, "Gyroscope z-axis pos change detected");
             this._gyroPosZ = Math.abs(val3);
-            if(isRecording) this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), deg);
+            if(isRecording) this.readings.addData(new SensorData(loc.getLatitude(), loc.getLongitude(), loc.getSpeed(), deg));
             return true;
         }
 
