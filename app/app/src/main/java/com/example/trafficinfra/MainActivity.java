@@ -24,11 +24,13 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.text.CollationElementIterator;
+import java.util.ArrayList;
 import java.util.Locale;
 import android.util.Log;
 import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
+
     public final static String TAG = "STATUS";
     private float lastX, lastY, lastZ;
 
@@ -196,8 +198,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             // Help: www.youtube.com/watch?v=8Veyw4e1MX0
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
 
-            // 0 - X, 1 - Y, 2 - z
-            // Gyroscope was not not initialized,
+            // 0 - X, 1 - Y, 2 - Z
+            // Gyroscope was not initialized,
             // save initial sensor values, set isInnit to true
             if (!this.gyroPosInit) {
                 _gyroPosX = Math.abs(event.values[0]);
@@ -212,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
                 // Difference in pos is greater than 0.2f, device rotation changed!
                 if (Math.abs(_gyroPosX - Math.abs(event.values[0])) > 0.2f) {
-                    //Log.d(TAG, "Gyroscope z-axis pos change detected");
+                    //Log.d(TAG, "Gyroscope x-axis pos change detected");
                     _gyroPosX = Math.abs(event.values[0]);
                 }
                 else if  (Math.abs(_gyroPosY - Math.abs(event.values[1])) > 0.2f) {
