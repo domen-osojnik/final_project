@@ -1,6 +1,8 @@
 package com.example.libreadings;
 
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class GyroReading {
@@ -10,9 +12,10 @@ public class GyroReading {
      *  Properties
      */
     private Date date;
-    public double Lat;
-    public double Long;
-    public int Degree;
+    private double Lat;
+    private double Long;
+    private int Degree;
+    private DateFormat dateFormat;
 
 
     /*
@@ -23,6 +26,7 @@ public class GyroReading {
         this.Long = Long;
         this.Degree = Degree;
         this.date = new Date();
+        dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     }
 
     /*
@@ -31,14 +35,18 @@ public class GyroReading {
     @Override
     public String toString() {
         return "GyroReading{" +
-                "Lat=" + this.Lat  +
+                "Date=" +   dateFormat.format(this.date) +
+                ", Lat=" + this.Lat  +
                 ", Long=" + this.Long +
                 ", Degree=" + this.Degree +
                 '}';
     }
 
     // Check difference of dates of readings between two GyroReadings
-    public Boolean cooldown(GyroReading reading) { return  Math.abs(reading.date.getTime() - this.date.getTime()) >= 5000; }
+    // If degree of bump is higher, save the higher one
+    public Boolean cooldown(GyroReading reading) {
+        return  (Math.abs(reading.date.getTime() - this.date.getTime()) >= 5000 || reading.Degree > this.Degree);
+    }
 
 }
 

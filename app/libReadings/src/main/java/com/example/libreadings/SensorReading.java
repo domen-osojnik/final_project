@@ -1,5 +1,7 @@
 package com.example.libreadings;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -14,6 +16,8 @@ public class SensorReading {
     private ArrayList<GyroReading> gyroValues;
     private ArrayList<AccReading> accValues;
     private ArrayList<GPSReading> gpsValues;
+    private DateFormat dateFormat;
+
     // ...
 
 
@@ -26,6 +30,7 @@ public class SensorReading {
         this.gyroValues = new ArrayList<GyroReading>();
         this.accValues = new ArrayList<AccReading>();
         this.gpsValues = new ArrayList<GPSReading>();
+        dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     }
 
 
@@ -41,12 +46,14 @@ public class SensorReading {
     }
 
     public String gyroToString() {
-        // Return string of all gyroscope readings
-        StringBuilder retval = new StringBuilder("GyroReading: [\n");
+
+        StringBuilder retval = new StringBuilder();
+
+        // Gyroscope readings to string
         for (GyroReading reading: this.gyroValues) {
-            retval.append(reading.toString());
-            retval.append("\n");
+            retval.append(reading.toString()).append(",\n");
         }
+
         retval.append("]");
         return retval.toString();
     }
@@ -54,11 +61,23 @@ public class SensorReading {
 
     @Override
     public String toString() {
-        StringBuilder retval = new StringBuilder("SensorReading{");
-        retval.append(this.gyroToString());
 
+        StringBuilder retval = new StringBuilder("SensorReading{\n");
+
+        // Date to string
+        retval.append("Date=").append(dateFormat.format(this.date)).append(",\n");
+
+        // Gyroscope readings to string
+        retval.append("GyroReadings=[\n").append(this.gyroToString()).append("],\n");
+
+        // GPS readings to string
         // ...
+
+        // Accelerometer readings to string
+        // ...
+
         retval.append("}\n");
+
         return retval.toString();
     }
 }
