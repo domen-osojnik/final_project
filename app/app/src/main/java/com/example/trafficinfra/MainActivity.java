@@ -7,6 +7,7 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // Gyroscope properties
     private Sensor gyro;
     private float[] rotationMatrix;
+    Boolean gyroPosInit;
 
     private float deltaXMax = 0;
     private float deltaYMax = 0;
@@ -80,6 +82,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Initialize gyro
         this.gyro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         this.rotationMatrix = new float[16];
+
+        // Initialize gyro values
+        _gyroPosX = _gyroPosY = _gyroPosZ = 0;
+        gyroPosInit = false;
 
         // Check if device has gyroscope
         if (this.gyro == null) {
@@ -144,6 +150,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, gyro, SensorManager.SENSOR_DELAY_NORMAL);
+
+        gyroPosInit = false;
     }
 
     //onPause() unregister the accelerometer for stop listening the events
@@ -185,12 +193,37 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         else if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             // Event was triggered by gyroscope
+            // Help: www.youtube.com/watch?v=8Veyw4e1MX0
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
 
-            _gyroPosX = event.values[0];
-            _gyroPosY = event.values[1];
-            _gyroPosZ = event.values[2];
-            //  ...
+            // 0 - X, 1 - Y, 2 - z
+            // Gyroscope was not not initialized,
+            // save initial sensor values, set isInnit to true
+            if (!this.gyroPosInit) {
+                _gyroPosX = Math.abs(event.values[0]);
+                _gyroPosY = Math.abs(event.values[1]);
+                _gyroPosZ = Math.abs(event.values[2]);
+
+                this.gyroPosInit = true;
+            }
+            // Gyroscope already initialized,
+            // calculate difference of prev pos and curr pos
+            else {
+
+                // Difference in pos is greater than 0.2f, device rotation changed!
+                if (Math.abs(_gyroPosX - Math.abs(event.values[0])) > 0.2f) {
+                    //Log.d(TAG, "Gyroscope z-axis pos change detected");
+                    _gyroPosX = Math.abs(event.values[0]);
+                }
+                else if  (Math.abs(_gyroPosY - Math.abs(event.values[1])) > 0.2f) {
+                    //Log.d(TAG, "Gyroscope y-axis pos change detected");
+                    _gyroPosY = Math.abs(event.values[1]);
+                }
+                else if  (Math.abs(_gyroPosZ - Math.abs(event.values[2])) > 0.2f) {
+                    //Log.d(TAG, "Gyroscope z-axis pos change detected");
+                    _gyroPosZ = Math.abs(event.values[2]);
+                }
+            }
         }
     }
 
