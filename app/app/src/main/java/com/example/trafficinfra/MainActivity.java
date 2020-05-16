@@ -19,6 +19,7 @@ import android.widget.TextView;
 import com.example.libreadings.RetrofitInterface;
 import com.example.libreadings.SensorData;
 import com.example.libreadings.SensorReading;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -328,16 +329,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     public void toggleRecoredingState(View v) {
         if (isRecording) {
             buttonRecord.setText("Start");
+
+            RetrofitInterface apiService = retrofit.create(RetrofitInterface.class);
+            Call<SensorReading> call = apiService.postReading(readings);
+            call.enqueue(new Callback<SensorReading>() {
+                @Override
+                public void onResponse(Call<SensorReading> call, Response<SensorReading> response) {
+                    int statusCode = response.code();
+                    Log.i(TAG, "Status Code: " + statusCode);
+                }
+
+                @Override
+                public void onFailure(Call<SensorReading> call, Throwable t) {
+                    Log.i(TAG, "Error: " + t.toString());
+                }
+            });
+
         }
         else {
             buttonRecord.setText("Stop");
 
-            // Test
-            HashMap<String, String> map = new HashMap<>();
-
-            map.put("msg", "Hello World!");
-
-            Call<Void> call = retrofitInterface.sendReadings(map);
+            /*
             call.enqueue(new Callback<Void>() {
                 @Override
                 public void onResponse(Call<Void> call, Response<Void> response) {
@@ -356,6 +368,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             Toast.LENGTH_LONG).show();
                 }
             });
+            */
+
 
             // Reset readings class
             readings = new SensorReading();
