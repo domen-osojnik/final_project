@@ -16,9 +16,12 @@ import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Vibrator;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.libreadings.GyroReading;
+import com.example.libreadings.SensorReading;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -33,6 +36,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     public final static String TAG = "STATUS";
     private float lastX, lastY, lastZ;
+
+    // Sensor readings containter
+    private SensorReading readings;
 
     private SensorManager sensorManager;
     private Sensor accelerometer;
@@ -70,6 +76,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView longitude;
     private int locationRequestCode = 1000;
 
+    // TODO: tmp, delet dis
+    Location loc;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // auto generated
@@ -77,6 +86,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
 
         initializeViews();
+
+        // Initialize sensor readings container
+        readings = new SensorReading();
 
         // Initialize sensor manager
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -128,6 +140,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
+                            // TODO: delet dis
+                            loc = location;
+
                             latitude.setText("latitude: "+ String.valueOf(location.getLatitude()));
                             longitude.setText("longitude: "+ String.valueOf(location.getLongitude()));
                             Log.v(TAG, String.valueOf(location.getSpeed()));
@@ -211,19 +226,27 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             // Gyroscope already initialized,
             // calculate difference of prev pos and curr pos
             else {
+                // degree 1 = malo ruknalo
+                // degree 2 = mal bolj ruknalo
+                // degree 3 = fejst ruknalo
 
                 // Difference in pos is greater than 0.2f, device rotation changed!
+                // If so, calculate new values and save readings
                 if (Math.abs(_gyroPosX - Math.abs(event.values[0])) > 0.2f) {
                     //Log.d(TAG, "Gyroscope x-axis pos change detected");
                     _gyroPosX = Math.abs(event.values[0]);
+                    this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), 5);
+
                 }
                 else if  (Math.abs(_gyroPosY - Math.abs(event.values[1])) > 0.2f) {
                     //Log.d(TAG, "Gyroscope y-axis pos change detected");
                     _gyroPosY = Math.abs(event.values[1]);
+                    this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), 5);
                 }
                 else if  (Math.abs(_gyroPosZ - Math.abs(event.values[2])) > 0.2f) {
                     //Log.d(TAG, "Gyroscope z-axis pos change detected");
                     _gyroPosZ = Math.abs(event.values[2]);
+                    this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), 5);
                 }
             }
         }
@@ -246,4 +269,17 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroPosY.setText("Y : " + _gyroPosY);
         gyroPosZ.setText("Z : " + _gyroPosZ);
     }
+
+
+    // Print saved sensor readings
+    public void printReadings(View v) {
+        Log.d(TAG, readings.toString());
+    }
+
+
+
 }
+
+
+
+

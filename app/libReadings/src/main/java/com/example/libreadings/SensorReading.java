@@ -18,7 +18,7 @@ public class SensorReading {
     /*
      *  Constructor
      */
-    SensorReading() {
+    public SensorReading() {
         // Initializing properties...
         this.date = new Date();
         this.gyroValues = new ArrayList<GyroReading>();
@@ -30,23 +30,30 @@ public class SensorReading {
     /*
      *  Methods
      */
-    public void readGyro(GyroReading reading) {
+    public void readGyro(double Lat, double Long, int Degree ) {
         // Insert new gyroscope sensor reading
-        this.gyroValues.add(reading);
+        this.gyroValues.add(new GyroReading(Lat, Long, Degree));
     }
 
-    /*
+    public String gyroToString() {
+        // Return string of all gyroscope readings
+        StringBuilder retval = new StringBuilder("GyroReading: [\n");
+        for (GyroReading reading: this.gyroValues) {
+            retval.append(reading.toString());
+            retval.append("\n");
+        }
+        retval.append("]");
+        return retval.toString();
+    }
+
+
     @Override
     public String toString() {
-        return "Park{" +
-                "mName='" + mName + '\'' +
-                ", mDateOfEstablishment=" + mDateOfEstablishment +
-                ", mSizeSquareKm=" + mSizeSquareKm +
-                ", mTreeList=" + mTreeList +
-                '}';
-     }
-     */
+        StringBuilder retval = new StringBuilder("SensorReading{");
+        retval.append(this.gyroToString());
 
-
-
+        // ...
+        retval.append("}\n");
+        return retval.toString();
+    }
 }
