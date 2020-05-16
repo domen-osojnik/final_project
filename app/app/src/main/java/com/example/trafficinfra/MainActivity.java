@@ -29,6 +29,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.text.CollationElementIterator;
 import java.util.ArrayList;
 import java.util.Locale;
+
 import android.util.Log;
 import android.widget.TextView;
 
@@ -129,7 +130,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         latitude = (TextView) this.findViewById(R.id.latitude);
 
         // check permission
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ){
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // reuqest for permission
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     locationRequestCode);
@@ -143,8 +144,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                             // TODO: delet dis
                             loc = location;
 
-                            latitude.setText("latitude: "+ String.valueOf(location.getLatitude()));
-                            longitude.setText("longitude: "+ String.valueOf(location.getLongitude()));
+                            latitude.setText("latitude: " + String.valueOf(location.getLatitude()));
+                            longitude.setText("longitude: " + String.valueOf(location.getLongitude()));
                             Log.v(TAG, String.valueOf(location.getSpeed()));
                             if (location != null) {
                                 // Logic to handle location object
@@ -207,8 +208,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if ((deltaZ > vibrateThreshold) || (deltaY > vibrateThreshold) || (deltaZ > vibrateThreshold)) {
                 v.vibrate(50);
             }
-        }
-        else if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
+        } else if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             // Event was triggered by gyroscope
             // Help: www.youtube.com/watch?v=8Veyw4e1MX0
             SensorManager.getRotationMatrixFromVector(rotationMatrix, event.values);
@@ -230,24 +230,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 // degree 2 = mal bolj ruknalo
                 // degree 3 = fejst ruknalo
 
-                // Difference in pos is greater than 0.2f, device rotation changed!
+                // If the difference in pos is greater than -degree-, then device rotation changed!
                 // If so, calculate new values and save readings
-                if (Math.abs(_gyroPosX - Math.abs(event.values[0])) > 0.2f) {
-                    //Log.d(TAG, "Gyroscope x-axis pos change detected");
-                    _gyroPosX = Math.abs(event.values[0]);
-                    this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), 5);
-
-                }
-                else if  (Math.abs(_gyroPosY - Math.abs(event.values[1])) > 0.2f) {
-                    //Log.d(TAG, "Gyroscope y-axis pos change detected");
-                    _gyroPosY = Math.abs(event.values[1]);
-                    this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), 5);
-                }
-                else if  (Math.abs(_gyroPosZ - Math.abs(event.values[2])) > 0.2f) {
-                    //Log.d(TAG, "Gyroscope z-axis pos change detected");
-                    _gyroPosZ = Math.abs(event.values[2]);
-                    this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), 5);
-                }
+                if (checkGyro4Bump(event.values[0], event.values[1], event.values[2], 3, 0.6f)) return;
+                if (checkGyro4Bump(event.values[0], event.values[1], event.values[2], 2, 0.4f)) return;
+                if (checkGyro4Bump(event.values[0], event.values[1], event.values[2], 1, 0.2f)) return;
             }
         }
     }
@@ -276,8 +263,31 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         Log.d(TAG, readings.toString());
     }
 
+    // Check if gyroscope sensor readings
+    // changed enough to register a bump in the road
+    public boolean checkGyro4Bump(float val1, float val2, float val3, int deg, float thresh) {
+        if (Math.abs(this._gyroPosX - Math.abs(val1)) > thresh) {
+            //Log.d(TAG, "Gyroscope x-axis pos change detected");
+            this._gyroPosX = Math.abs(val1);
+            this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), deg);
+            return true;
 
+        } else if (Math.abs(this._gyroPosY - Math.abs(val2)) > thresh) {
+            //Log.d(TAG, "Gyroscope y-axis pos change detected");
+            this._gyroPosY = Math.abs(val2);
+            this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), deg);
+            return true;
 
+        } else if (Math.abs(this._gyroPosZ - Math.abs(val3)) > thresh) {
+            //Log.d(TAG, "Gyroscope z-axis pos change detected");
+            this._gyroPosZ = Math.abs(val3);
+            this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), deg);
+            return true;
+
+        }
+
+        return false;
+    }
 }
 
 
