@@ -35,11 +35,13 @@ public class SensorReading {
      *  Methods
      */
     public void readGyro(double Lat, double Long, int Degree) {
+        /*
         // Insert new gyroscope sensor reading, cooldown for new events is 5 seconds
         GyroReading reading = new GyroReading(Lat, Long, Degree);
         if (this.gyroValues.isEmpty() || this.gyroValues.get(this.gyroValues.size()-1).cooldown(reading)) {
             this.gyroValues.add(new GyroReading(Lat, Long, Degree));
         }
+        */
     }
 
     public String gyroToString() {
@@ -47,9 +49,11 @@ public class SensorReading {
         StringBuilder retval = new StringBuilder();
 
         // Gyroscope readings to string
+        /*
         for (GyroReading reading: this.gyroValues) {
             retval.append(reading.toString()).append(",\n");
         }
+        */
 
         retval.append("]");
         return retval.toString();

@@ -16,20 +16,33 @@ import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-
+import com.example.libreadings.RetrofitInterface;
 import com.example.libreadings.SensorData;
 import com.example.libreadings.SensorReading;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.gson.Gson;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.File;
+import java.util.HashMap;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     public final static String TAG = "STATUS";
+
+    // Class for app-backend communication
+    private Retrofit retrofit;
+    private RetrofitInterface retrofitInterface;
+    // TODO: Hostat nekje
+    private String BASE_URL = "http://192.168.1.229:3000"; // (local ip)
 
     // Recording state:
     // if true then save sensor readings
@@ -86,6 +99,14 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
 
         initializeViews();
+
+        // Initialize retrofit
+        retrofit = new Retrofit.Builder()
+                .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        retrofitInterface = retrofit.create(RetrofitInterface.class);
 
         // Do not save sensor states until record button is pressed
         isRecording = false;
@@ -309,6 +330,34 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         else {
             buttonRecord.setText("Stop");
+
+            // Test
+            HashMap<String, String> map = new HashMap<>();
+
+            map.put("msg", "Hello World!");
+
+            Call<Void> call = retrofitInterface.sendReadings(map);
+            call.enqueue(new Callback<Void>() {
+                @Override
+                public void onResponse(Call<Void> call, Response<Void> response) {
+                    if (response.code() == 200) {
+                        Toast.makeText(MainActivity.this,
+                                "Signed up successfully", Toast.LENGTH_LONG).show();
+                    } else if (response.code() == 400) {
+                        Toast.makeText(MainActivity.this,
+                                "Already registered", Toast.LENGTH_LONG).show();
+                    }
+                }
+
+                @Override
+                public void onFailure(Call<Void> call, Throwable t) {
+                    Toast.makeText(MainActivity.this, t.getMessage(),
+                            Toast.LENGTH_LONG).show();
+                }
+            });
+
+            // Reset readings class
+            readings = new SensorReading();
         }
 
         isRecording = !isRecording;
@@ -318,7 +367,3 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         readings.addData(new SensorData(0.00, 0.00, 0, shakeDegree));
     }
 }
-
-
-
-
