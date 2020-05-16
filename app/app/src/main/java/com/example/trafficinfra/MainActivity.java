@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.example.libreadings.SensorData;
 import com.example.libreadings.SensorReading;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -28,9 +29,7 @@ import android.util.Log;
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
-
     public final static String TAG = "STATUS";
-    private float lastX, lastY, lastZ;
 
     // Recording state:
     // if true then save sensor readings
@@ -40,22 +39,23 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     // Sensor readings containter
     private SensorReading readings;
-
     private SensorManager sensorManager;
     private Sensor accelerometer;
+
+    // Accelerometer properties
+    private float deltaXMax = 0;
+    private float deltaYMax = 0;
+    private float deltaZMax = 0;
+
+    private float lastX, lastY, lastZ;
+    private float deltaX = 0;
+    private float deltaY = 0;
+    private float deltaZ = 0;
 
     // Gyroscope properties
     private Sensor gyro;
     private float[] rotationMatrix;
     Boolean gyroPosInit;
-
-    private float deltaXMax = 0;
-    private float deltaYMax = 0;
-    private float deltaZMax = 0;
-
-    private float deltaX = 0;
-    private float deltaY = 0;
-    private float deltaZ = 0;
 
     // Gyroscope sensor values
     private float _gyroPosX;
@@ -77,7 +77,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     TextView longitude;
     private int locationRequestCode = 1000;
 
-    // TODO: tmp, delet dis
     Location loc;
 
     @Override
@@ -96,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         // Initialize sensor manager
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
-
+        //region Ustvarjanje žiroskopa
         // Initialize gyro
         this.gyro = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
         this.rotationMatrix = new float[16];
@@ -111,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             finish();
         }
 
+
         //  Register listener for gyroscope
         sensorManager.registerListener(this, gyro, SensorManager.SENSOR_DELAY_NORMAL);
 
@@ -124,6 +124,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         } else {
             Log.d(TAG, "Pospeškometer ne obstaja na tej napravi!");
         }
+        //endregion
 
         //initialize vibration
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
@@ -144,7 +145,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     .addOnSuccessListener(this, new OnSuccessListener<Location>() {
                         @Override
                         public void onSuccess(Location location) {
-                            // TODO: delet dis
                             loc = location;
 
                             latitude.setText("latitude: " + String.valueOf(location.getLatitude()));
@@ -172,7 +172,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         super.onResume();
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, gyro, SensorManager.SENSOR_DELAY_NORMAL);
-
         gyroPosInit = false;
     }
 
@@ -189,10 +188,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     @Override
     public void onSensorChanged(SensorEvent event) {
-
         // Triggered event
         Sensor sensor = event.sensor;
-
         if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             // clean current values
             displayCleanValues();
@@ -212,6 +209,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if ((deltaZ > vibrateThreshold) || (deltaY > vibrateThreshold) || (deltaZ > vibrateThreshold)) {
                 v.vibrate(50);
             }
+
+            //Add to data list if a larger shake is detected
+            if(deltaX > 10)packData(1);
+            if(deltaY > 10)packData(1);
+            if(deltaZ > 10)packData(1);
+
+            if(deltaX > 20)packData(2);
+            if(deltaY > 20)packData(2);
+            if(deltaZ > 20)packData(2);
+
         } else if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             // Event was triggered by gyroscope
             // Help: www.youtube.com/watch?v=8Veyw4e1MX0
@@ -307,8 +314,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         isRecording = !isRecording;
     }
 
-
-
+    private void packData(int shakeDegree){
+        readings.addData(new SensorData(0.00, 0.00, 0, shakeDegree));
+    }
 }
 
 

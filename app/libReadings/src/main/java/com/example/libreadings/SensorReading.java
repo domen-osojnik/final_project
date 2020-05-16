@@ -8,18 +8,14 @@ import java.util.Date;
 import sun.rmi.runtime.Log;
 
 public class SensorReading {
-
     /*
      *  Properties
      */
     private Date date;
-    private ArrayList<GyroReading> gyroValues;
-    private ArrayList<AccReading> accValues;
-    private ArrayList<GPSReading> gpsValues;
+    private ArrayList<SensorData> dataValues;
     private DateFormat dateFormat;
 
     // ...
-
 
     /*
      *  Constructor
@@ -27,14 +23,15 @@ public class SensorReading {
     public SensorReading() {
         // Initializing properties...
         this.date = new Date();
-        this.gyroValues = new ArrayList<GyroReading>();
-        this.accValues = new ArrayList<AccReading>();
-        this.gpsValues = new ArrayList<GPSReading>();
+        this.dataValues = new ArrayList<SensorData>();
         dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     }
 
+    public void addData(SensorData data){
+        this.dataValues.add(data);
+    }
 
-    /*
+     /*
      *  Methods
      */
     public void readGyro(double Lat, double Long, int Degree) {
