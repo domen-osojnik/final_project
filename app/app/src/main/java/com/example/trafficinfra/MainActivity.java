@@ -1,42 +1,42 @@
 package com.example.trafficinfra;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.location.Address;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Vibrator;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.libreadings.GyroReading;
 import com.example.libreadings.SensorReading;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
-
-import java.text.CollationElementIterator;
-import java.util.ArrayList;
-import java.util.Locale;
+import com.google.gson.Gson;
 
 import android.util.Log;
-import android.widget.TextView;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
 
     public final static String TAG = "STATUS";
     private float lastX, lastY, lastZ;
+
+    // Recording state:
+    // if true then save sensor readings
+    // else do not
+    private Boolean isRecording;
+    private Button buttonRecord;
 
     // Sensor readings containter
     private SensorReading readings;
@@ -87,6 +87,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
 
         initializeViews();
+
+        // Do not save sensor states until record button is pressed
+        isRecording = false;
 
         // Initialize sensor readings container
         readings = new SensorReading();
@@ -160,6 +163,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroPosX = (TextView) findViewById(R.id.gyroPosX);
         gyroPosY = (TextView) findViewById(R.id.gyroPosY);
         gyroPosZ = (TextView) findViewById(R.id.gyroPosZ);
+        buttonRecord = (Button) findViewById(R.id.buttonRecord);
     }
 
 
@@ -215,7 +219,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
             // 0 - X, 1 - Y, 2 - Z
             // Gyroscope was not initialized,
-            // save initial sensor values, set isInnit to true
+            // save initial sensor values, set state initialized to true
             if (!this.gyroPosInit) {
                 _gyroPosX = Math.abs(event.values[0]);
                 _gyroPosY = Math.abs(event.values[1]);
@@ -226,12 +230,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             // Gyroscope already initialized,
             // calculate difference of prev pos and curr pos
             else {
-                // degree 1 = malo ruknalo
-                // degree 2 = mal bolj ruknalo
-                // degree 3 = fejst ruknalo
+                // degree 1 = small bump
+                // degree 2 = medium bump
+                // degree 3 = large bump
 
                 // If the difference in pos is greater than -degree-, then device rotation changed!
-                // If so, calculate new values and save readings
+                // If so, calculate new values and save readings (degree, date, geo-loc)
                 if (checkGyro4Bump(event.values[0], event.values[1], event.values[2], 3, 0.6f)) return;
                 if (checkGyro4Bump(event.values[0], event.values[1], event.values[2], 2, 0.4f)) return;
                 if (checkGyro4Bump(event.values[0], event.values[1], event.values[2], 1, 0.2f)) return;
@@ -243,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // accelerometer
         currentX.setText("0.0");
 
-        // gyroscope
+        // Gyro values
         gyroPosX.setText("0");
         gyroPosY.setText("0");
         gyroPosZ.setText("0");
@@ -252,9 +256,11 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // display the current x,y,z accelerometer values
     public void displayCurrentValues() {
         currentX.setText(Float.toString(deltaX));
-        gyroPosX.setText("X : " + _gyroPosX);
-        gyroPosY.setText("Y : " + _gyroPosY);
-        gyroPosZ.setText("Z : " + _gyroPosZ);
+
+        // Gyro values
+        gyroPosX.setText("X : " + _gyroPosX + " rad/s");
+        gyroPosY.setText("Y : " + _gyroPosY + " rad/s");
+        gyroPosZ.setText("Z : " + _gyroPosZ + " rad/s");
     }
 
 
@@ -269,25 +275,40 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (Math.abs(this._gyroPosX - Math.abs(val1)) > thresh) {
             //Log.d(TAG, "Gyroscope x-axis pos change detected");
             this._gyroPosX = Math.abs(val1);
-            this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), deg);
+            if(isRecording) this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), deg);
             return true;
 
         } else if (Math.abs(this._gyroPosY - Math.abs(val2)) > thresh) {
             //Log.d(TAG, "Gyroscope y-axis pos change detected");
             this._gyroPosY = Math.abs(val2);
-            this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), deg);
+            if(isRecording) this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), deg);
             return true;
 
         } else if (Math.abs(this._gyroPosZ - Math.abs(val3)) > thresh) {
             //Log.d(TAG, "Gyroscope z-axis pos change detected");
             this._gyroPosZ = Math.abs(val3);
-            this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), deg);
+            if(isRecording) this.readings.readGyro(loc.getLatitude(), loc.getLongitude(), deg);
             return true;
-
         }
 
+        // Gyroscope readings did not change enough, to register a bump,
         return false;
     }
+
+    // Stop/Start recording sensor readings
+    public void toggleRecoredingState(View v) {
+        if (isRecording) {
+            buttonRecord.setText("Start");
+        }
+        else {
+            buttonRecord.setText("Stop");
+        }
+
+        isRecording = !isRecording;
+    }
+
+
+
 }
 
 
