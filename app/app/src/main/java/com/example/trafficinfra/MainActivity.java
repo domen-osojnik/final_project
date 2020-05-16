@@ -12,6 +12,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Looper;
 import android.os.Vibrator;
 import android.view.View;
 import android.widget.Button;
@@ -19,16 +20,14 @@ import android.widget.TextView;
 import com.example.libreadings.RetrofitInterface;
 import com.example.libreadings.SensorData;
 import com.example.libreadings.SensorReading;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 
 import android.util.Log;
-import android.widget.Toast;
-
-import java.io.File;
-import java.util.HashMap;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -81,15 +80,21 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView gyroPosX;
     private TextView gyroPosY;
     private TextView gyroPosZ;
+    private TextView latitude;
+    private TextView longitude;
+    private TextView speed;
 
     private float vibrateThreshold = 0;
 
     public Vibrator v;
 
     private FusedLocationProviderClient fusedLocationClient;
-    TextView latitude;
-    TextView longitude;
     private int locationRequestCode = 1000;
+    private LocationCallback locationCallback;
+    private LocationRequest locationRequest;
+    private double latitudeV;
+    private double longitudeV;
+    private float speedV;
 
     Location loc;
 
@@ -151,33 +156,36 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         //initialize vibration
         v = (Vibrator) this.getSystemService(Context.VIBRATOR_SERVICE);
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        longitude = (TextView) this.findViewById(R.id.longitude);
-        latitude = (TextView) this.findViewById(R.id.latitude);
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         // check permission
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // reuqest for permission
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     locationRequestCode);
-
-
-        } else {
-            fusedLocationClient.getLastLocation()
-                    .addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                        @Override
-                        public void onSuccess(Location location) {
-                            loc = location;
-
-                            latitude.setText("latitude: " + String.valueOf(location.getLatitude()));
-                            longitude.setText("longitude: " + String.valueOf(location.getLongitude()));
-                            Log.v(TAG, String.valueOf(location.getSpeed()));
-                            if (location != null) {
-                                // Logic to handle location object
-                            }
-                        }
-                    });
         }
+
+        locationRequest = LocationRequest.create();
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(1000);
+        locationRequest.setFastestInterval(500);
+
+        locationCallback = new LocationCallback() {
+            @Override
+            public void onLocationResult(LocationResult locationResult) {
+                if (locationResult == null) {
+                    return;
+                }
+                for (Location location : locationResult.getLocations()) {
+                    latitude.setText("latitude: " + String.valueOf(location.getLatitude()));
+                    longitude.setText("longitude: " + String.valueOf(location.getLongitude()));
+                    speed.setText("speed: " + String.valueOf(location.getSpeed()));
+                    latitudeV=location.getLatitude();
+                    longitudeV=location.getLongitude();
+                    speedV=location.getSpeed();
+                }
+            }
+        };
     }
 
     public void initializeViews() {
@@ -186,6 +194,9 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroPosY = (TextView) findViewById(R.id.gyroPosY);
         gyroPosZ = (TextView) findViewById(R.id.gyroPosZ);
         buttonRecord = (Button) findViewById(R.id.buttonRecord);
+        longitude = (TextView) this.findViewById(R.id.longitude);
+        latitude = (TextView) this.findViewById(R.id.latitude);
+        speed = (TextView) this.findViewById(R.id.speed);
     }
 
 
@@ -195,12 +206,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, gyro, SensorManager.SENSOR_DELAY_NORMAL);
         gyroPosInit = false;
+        fusedLocationClient.requestLocationUpdates(locationRequest,
+                locationCallback,
+                Looper.getMainLooper());
     }
 
     //onPause() unregister the accelerometer for stop listening the events
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+        fusedLocationClient.removeLocationUpdates(locationCallback);
     }
 
     @Override
@@ -379,6 +394,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     }
 
     private void packData(int shakeDegree){
-        readings.addData(new SensorData(0.00, 0.00, 0, shakeDegree));
+        readings.addData(new SensorData(latitudeV, longitudeV, speedV, shakeDegree));
     }
 }
