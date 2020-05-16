@@ -1,19 +1,34 @@
 package com.example.libreadings;
 
 
+import com.google.gson.annotations.Expose;
+import com.google.gson.annotations.SerializedName;
+
+import java.io.Serializable;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class SensorData {
+public class SensorData implements Serializable {
     /*
      *  Properties
      */
-    private DateFormat dateFormat;
+    //@Expose(serialize = false)
+    //private DateFormat dateFormat;
+
+    @SerializedName("date")
     private Date date;
+
+    @SerializedName("lat")
     private double Lat;
+
+    @SerializedName("long")
     private double Long;
+
+    @SerializedName("degree")
     private int shakeDegree;
+
+    @SerializedName("speed")
     private float speed;
 
     /*
@@ -25,7 +40,7 @@ public class SensorData {
         this.date = new Date();
         this.speed = speed;
         this.shakeDegree = shakeDegree;
-        dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+        //dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
     }
 
     /*
@@ -33,6 +48,8 @@ public class SensorData {
      */
     @Override
     public String toString() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+
         return "SensorData{" +
                 "Date=" +   dateFormat.format(this.date) +
                 ", Lat=" + this.Lat  +
