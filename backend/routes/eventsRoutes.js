@@ -5,26 +5,26 @@ var eventsController = require('../controllers/eventsController.js');
 /*
  * GET
  */
-router.get('/', eventsController.list);
+//router.get('/', eventsController.list);
 
 /*
  * GET
  */
-router.get('/:id', eventsController.show);
+//router.get('/:id', eventsController.show);
 
 /*
  * POST
  */
-router.post('/', eventsController.create);
+//router.post('/', eventsController.create);
 
 /*
  * PUT
  */
-router.put('/:id', eventsController.update);
+//router.put('/:id', eventsController.update);
 
 /*
  * DELETE
  */
-router.delete('/:id', eventsController.remove);
+//router.delete('/:id', eventsController.remove);
 
 module.exports = router;

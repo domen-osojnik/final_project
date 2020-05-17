@@ -24,27 +24,6 @@ module.exports = {
     },
 
     /**
-     * recordingsController.show()
-     */
-    show: function (req, res) {
-        var id = req.params.id;
-        recordingsModel.findOne({ _id: id }, function (err, recordings) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting recordings.',
-                    error: err
-                });
-            }
-            if (!recordings) {
-                return res.status(404).json({
-                    message: 'No such recordings'
-                });
-            }
-            return res.json(recordings);
-        });
-    },
-
-    /**
      * recordingsController.create()
      */
     create: function (req, res) {
@@ -70,54 +49,4 @@ module.exports = {
         });
 
     },
-
-    /**
-     * recordingsController.update()
-     */
-    update: function (req, res) {
-        var id = req.params.id;
-        recordingsModel.findOne({ _id: id }, function (err, recordings) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when getting recordings',
-                    error: err
-                });
-            }
-            if (!recordings) {
-                return res.status(404).json({
-                    message: 'No such recordings'
-                });
-            }
-
-            recordings.events = req.body.events ? req.body.events : recordings.events;
-            recordings.date = req.body.date ? req.body.date : recordings.date;
-
-            recordings.save(function (err, recordings) {
-                if (err) {
-                    return res.status(500).json({
-                        message: 'Error when updating recordings.',
-                        error: err
-                    });
-                }
-
-                return res.json(recordings);
-            });
-        });
-    },
-
-    /**
-     * recordingsController.remove()
-     */
-    remove: function (req, res) {
-        var id = req.params.id;
-        recordingsModel.findByIdAndRemove(id, function (err, recordings) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when deleting the recordings.',
-                    error: err
-                });
-            }
-            return res.status(204).json();
-        });
-    }
 };

@@ -7,7 +7,7 @@ var eventsController = require('../controllers/eventsController.js');
 /*
  * GET
  */
-router.get('/', recordingsController.show);
+//router.get('/', recordingsController.show);
 
 /*
  * POST
@@ -18,11 +18,11 @@ router.post('/', eventsController.insert, recordingsController.create);
 /*
  * PUT
  */
-router.put('/:id', recordingsController.update);
+//router.put('/:id', recordingsController.update);
 
 /*
  * DELETE
  */
-router.delete('/:id', recordingsController.remove);
+//router.delete('/:id', recordingsController.remove);
 
 module.exports = router;
