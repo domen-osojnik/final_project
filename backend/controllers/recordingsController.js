@@ -51,8 +51,9 @@ module.exports = {
         console.log();
         var i = 0;
 
+        console.log(req.body.events);
         var recordings = new recordingsModel({
-            events: JSON.stringify(res.locals.ids), //Fix this
+            events: res.locals.ids, //Fix this
             date: req.body.date
         });
 
