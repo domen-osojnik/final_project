@@ -42,7 +42,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private Retrofit retrofit;
     private RetrofitInterface retrofitInterface;
     // TODO: Hostat nekje
-    private String BASE_URL = "http://192.168.1.229:3000"; // (local ip)
+    private String BASE_URL = "http://192.168.1.111:3000"; // (local ip)
 
     // Recording state:
     // if true then save sensor readings
