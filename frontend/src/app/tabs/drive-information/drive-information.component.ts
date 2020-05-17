@@ -1,21 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { ApiService } from 'src/app/services/api.service';
+import { SensorData, Log } from 'src/app/models/viewmodels';
 
-interface Log {
-  value: string;
-}
 
-export interface SensorReading {
-  date: string;
-  latitude: number;
-  longtitude: number;
-  speed: number;
-  maxSpeed:number;
-  shakeDegree:number;
-}
-
-const ELEMENT_DATA: SensorReading[] = [
-  {date: new Date().getDate().toLocaleString(), latitude: 1.0079, longtitude: 1.0079, speed: 0, maxSpeed: 0, shakeDegree:0}
-];
 
 @Component({
   selector: 'app-drive-information',
@@ -29,11 +16,18 @@ export class DriveInformationComponent implements OnInit {
     {value: 'ID12421525-2'}
   ];
 
-  displayedColumns: string[] = ['date', 'latitude', 'longtitude', 'speed', 'maxSpeed', 'shakeDegree'];
-  dataSource = ELEMENT_DATA;
+  displayedColumns: string[] = ['date', 'latitude', 'longtitude', 'speed', 'shakeDegree'];
+  dataSource = null;
+  SENSOR_DATA: SensorData[] = [];
 
-  constructor() { }
+  constructor(private apiService:ApiService) { }
 
   ngOnInit(): void {
+    this.getData();
+  }
+
+  getData():void{
+    this.apiService.getLogData().subscribe(data=>this.SENSOR_DATA=data);
+    this.dataSource = this.SENSOR_DATA;
   }
 }

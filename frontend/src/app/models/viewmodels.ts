@@ -1,3 +1,7 @@
+export interface Log {
+    value: string;
+  }
+
 export interface SensorData{
     date: string;
     latitude: number;
