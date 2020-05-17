@@ -1,4 +1,5 @@
 var recordingsModel = require('../models/recordingsModel.js');
+var mongoose = require('mongoose');
 
 /**
  * recordingsController.js
@@ -48,11 +49,10 @@ module.exports = {
      */
     create: function (req, res) {
         console.log("\n>... recieved sensor readings (" + req.body.events.length + ")");
-        console.log();
         var i = 0;
 
         var recordings = new recordingsModel({
-            events: JSON.stringify(res.locals.ids), //Fix this
+            events: res.locals.ids,
             date: req.body.date
         });
 
