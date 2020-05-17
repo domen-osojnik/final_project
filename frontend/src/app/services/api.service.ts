@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SensorData, ScrapeData, SignData } from '../models/viewmodels';
+import { SensorData, ScrapeData, SignData, Log } from '../models/viewmodels';
 import { catchError, tap } from "rxjs/operators";
 
 @Injectable({
@@ -13,8 +13,8 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
    //Pridobivanje Logov
-   public getLogData(): Observable<SensorData[]> {
-    return this.http.get<SensorData[]>(ApiService.dataHost + "recordings").pipe(
+   public getLogData(): Observable<Log[]> {
+    return this.http.get<Log[]>(ApiService.dataHost + "recordings").pipe(
       tap(() => {}),
       catchError(this.handleError("Log data rertrieval", "404 NOT FOUND"))
     );

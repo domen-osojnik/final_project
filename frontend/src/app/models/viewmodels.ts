@@ -1,6 +1,4 @@
-export interface Log {
-    value: string;
-  }
+
 
 export interface SensorData{
     date: string;
@@ -10,6 +8,11 @@ export interface SensorData{
     maxSpeed:number;
     shakeDegree:number;
 }
+
+export interface Log {
+    _id: string;
+    readings:Array<SensorData>;
+  }
 
 export interface SignData{
     date: string;
