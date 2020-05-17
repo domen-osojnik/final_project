@@ -11,7 +11,7 @@ module.exports = {
      * recordingsController.list()
      */
     list: function (req, res) {
-        recordingsModel.find(function (err, recordingss) {
+        recordingsModel.find().sort({date:-1}).populate('events').exec(function (err, recordingss) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting recordings.',
