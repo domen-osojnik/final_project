@@ -14,7 +14,7 @@ export class ApiService {
 
    //Pridobivanje Logov
    public getLogData(): Observable<Log[]> {
-    return this.http.get<Log[]>(ApiService.dataHost + "recordings").pipe(
+    return this.http.get<Log[]>(ApiService.dataHost + "getRecordings").pipe(
       tap(() => {}),
       catchError(this.handleError("Log data rertrieval", "404 NOT FOUND"))
     );

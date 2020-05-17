@@ -1,17 +1,17 @@
-
-
 export interface SensorData{
     date: string;
-    latitude: number;
-    longtitude: number;
+    lat: number;
+    long: number;
     speed: number;
-    maxSpeed:number;
-    shakeDegree:number;
+    degree:number;
+    degreeStatus:string;
+    _id:string;
 }
 
 export interface Log {
+    date:string;
     _id: string;
-    readings:Array<SensorData>;
+    events:Array<SensorData>;
   }
 
 export interface SignData{
