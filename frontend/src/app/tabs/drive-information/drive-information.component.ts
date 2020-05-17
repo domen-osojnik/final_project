@@ -10,14 +10,10 @@ import { SensorData, Log } from 'src/app/models/viewmodels';
   styleUrls: ['./drive-information.component.css']
 })
 export class DriveInformationComponent implements OnInit {
-  logs: Log[] = [
-    {value: 'ID12421525'},
-    {value: 'ID1242152521t'},
-    {value: 'ID12421525-2'}
-  ];
-
+  dataSource:SensorData[] = [];
+  logs: Log[] = [];
   displayedColumns: string[] = ['date', 'latitude', 'longtitude', 'speed', 'shakeDegree'];
-  dataSource = null;
+  
   SENSOR_DATA: SensorData[] = [];
 
   constructor(private apiService:ApiService) { }
@@ -27,7 +23,7 @@ export class DriveInformationComponent implements OnInit {
   }
 
   getData():void{
-    this.apiService.getLogData().subscribe(data=>this.SENSOR_DATA=data);
-    this.dataSource = this.SENSOR_DATA;
+    this.apiService.getLogData().subscribe(data=>this.logs=data);
+    console.log(this.logs);
   }
 }
