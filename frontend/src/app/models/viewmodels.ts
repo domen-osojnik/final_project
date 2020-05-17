@@ -11,16 +11,10 @@ export interface SignData{
     date: string;
     latitude: number;
     longtitude: number;
-    speed: number;
-    maxSpeed:number;
-    shakeDegree:number;
+    sign: string;
 }
 
 export interface ScrapeData{
-    date: string;
-    latitude: number;
-    longtitude: number;
-    speed: number;
-    maxSpeed:number;
-    shakeDegree:number;
+    type:number;
+    description:string;
 }

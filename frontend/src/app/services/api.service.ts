@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SensorData, ScrapeData, SignData } from '../viewmodels/interfaces';
+import { SensorData, ScrapeData, SignData } from '../models/viewmodels';
 import { catchError, tap } from "rxjs/operators";
 
 @Injectable({
