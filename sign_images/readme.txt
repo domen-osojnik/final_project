@@ -1,0 +1,1 @@
+Fotografije za strojno učenje
