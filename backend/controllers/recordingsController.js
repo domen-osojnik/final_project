@@ -51,6 +51,7 @@ module.exports = {
         console.log("\n>... recieved sensor readings (" + req.body.events.length + ")");
         var i = 0;
 
+        console.log(req.body.events);
         var recordings = new recordingsModel({
             events: res.locals.ids,
             date: req.body.date
