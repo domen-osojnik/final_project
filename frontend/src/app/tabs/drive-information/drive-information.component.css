@@ -1,0 +1,14 @@
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 20px;
+  }
+
+  .feed-panel{
+    width:40%;
+  }
+
+  table {
+    width: 100%;
+  }

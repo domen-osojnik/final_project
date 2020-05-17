@@ -1,1 +1,148 @@
-<p>drive-information works!</p>
+<div class="wrapper">
+  <mat-card>
+    <mat-card-title>
+      Pregled cestišča
+    </mat-card-title>
+    <mat-card-content>
+      <google-map width="700" height="700"></google-map>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="feed-panel">
+    <mat-card-title>
+      Zapisnik
+    </mat-card-title>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+      <mat-form-field>
+        <mat-label>Vožnja</mat-label>
+        <mat-select (selectionChange)="selectLog($event.value)">
+          <mat-option *ngFor="let log of logs" [value]="log._id">
+            {{ log._id }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-divider style="margin-bottom: 30px;"></mat-divider>
+
+       <!-- TABELA -->
+       <mat-table [dataSource]="dataSource"> 
+        <ng-container matColumnDef="date">
+          <mat-header-cell *matHeaderCellDef> Datum </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.date |  date:'MM/dd/yyyy' }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="lat">
+          <mat-header-cell *matHeaderCellDef> Lat. </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.lat }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="long">
+          <mat-header-cell *matHeaderCellDef> Long. </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.long }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="speed">
+          <mat-header-cell *matHeaderCellDef> Hitrost </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.speed | number }} KM/h
+          </mat-cell>
+        </ng-container>
+
+        <!-- <ng-container matColumnDef="maxSpeed">
+          <mat-header-cell *matHeaderCellDef>
+            Omejitev
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.maxSpeed }}
+          </mat-cell>
+        </ng-container> -->
+
+        <ng-container matColumnDef="degreeStatus">
+          <mat-header-cell *matHeaderCellDef> Cestišče </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.degreeStatus }}
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- <mat-card class="feed-panel">
+    <mat-card-title>
+      Prometni znaki
+    </mat-card-title>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+      <mat-form-field>
+        <mat-label>Vožnja</mat-label>
+        <mat-select>
+          <mat-option *ngFor="let log of logs" [value]="log.value">
+            {{ log.value }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-divider style="margin-bottom: 30px;"></mat-divider>
+
+      <!-- TABELA -->
+      <!-- <mat-table [dataSource]="dataSource"> 
+        <ng-container matColumnDef="date">
+          <mat-header-cell *matHeaderCellDef> Datum </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.date }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="latitude">
+          <mat-header-cell *matHeaderCellDef> Lat </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.latitude }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="longtitude">
+          <mat-header-cell *matHeaderCellDef> Longt </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.longtitude }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="speed">
+          <mat-header-cell *matHeaderCellDef> Hitrost </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.speed }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="maxSpeed">
+          <mat-header-cell *matHeaderCellDef>
+            Omejitev
+          </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.maxSpeed }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="shakeDegree">
+          <mat-header-cell *matHeaderCellDef> Stanje </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.shakeDegree }}
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+    </mat-card-content>
+  </mat-card> -->
+</div>

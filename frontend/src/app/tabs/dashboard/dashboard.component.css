@@ -1,10 +1,10 @@
-.wrapper {
+.feed-panel{
+  width:20%;
+}
+
+.wrapper{
   display: flex;
   flex-direction: row;
-}
-
-.maps-wrapper {
-}
-
-.info-wrapper {
+  justify-content: space-evenly;
+  padding: 40px;
 }
