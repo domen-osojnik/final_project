@@ -1,4 +1,5 @@
 var eventsModel = require('../models/eventsModel.js');
+var mongoose = require('mongoose');
 
 /**
  * eventsController.js
@@ -152,8 +153,8 @@ module.exports = {
                         });
                     }
 
-                    // Remember its id for reference when creating a recording
-                    res.locals.ids.push(result._id);
+                    // Remember its id for reference when creating a recording     
+                    res.locals.ids.push(mongoose.Types.ObjectId(result._id));
                     i++;
                     if (req.body.events.length == i) next();
                 });

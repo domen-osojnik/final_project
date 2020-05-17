@@ -12,6 +12,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
 import android.view.View;
@@ -29,6 +30,12 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import android.util.Log;
 
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -38,11 +45,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements SensorEventListener {
     public final static String TAG = "STATUS";
 
+    // Register new event every x seconds
+    Handler handler;
+    Runnable runnable;
+
     // Class for app-backend communication
     private Retrofit retrofit;
     private RetrofitInterface retrofitInterface;
     // TODO: Hostat nekje
-    private String BASE_URL = "http://192.168.1.229:3000"; // (local ip)
+    private String BASE_URL = "http://192.168.1.111:3000"; // (local ip)
 
     // Recording state:
     // if true then save sensor readings
@@ -105,6 +116,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         setContentView(R.layout.activity_main);
 
         initializeViews();
+
+        // Initialize timer that will call save geo-loc every x seconds...
+        handler = new Handler();
+
 
         // Initialize retrofit
         retrofit = new Retrofit.Builder()
@@ -203,7 +218,18 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     //onResume() register the accelerometer for listening the events
     protected void onResume() {
+
+        // Start saving new event every x seconds
+        handler.postDelayed(runnable = new Runnable() {
+            public void run() {
+                handler.postDelayed(runnable, 10000);
+                packData(0);
+            }
+        }, 10000);
+
         super.onResume();
+
+        // Start sensor measurements
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, gyro, SensorManager.SENSOR_DELAY_NORMAL);
         gyroPosInit = false;
@@ -320,20 +346,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         if (Math.abs(this._gyroPosX - Math.abs(val1)) > thresh) {
             //Log.d(TAG, "Gyroscope x-axis pos change detected");
             this._gyroPosX = Math.abs(val1);
-            //public SensorData(double Lat, double Long, float speed, int shakeDegree) {
-            if(isRecording) this.readings.addData(new SensorData(loc.getLatitude(), loc.getLongitude(), loc.getSpeed(), deg));
+            packData(deg);
             return true;
 
         } else if (Math.abs(this._gyroPosY - Math.abs(val2)) > thresh) {
             //Log.d(TAG, "Gyroscope y-axis pos change detected");
             this._gyroPosY = Math.abs(val2);
-            if(isRecording) this.readings.addData(new SensorData(loc.getLatitude(), loc.getLongitude(), loc.getSpeed(), deg));
+            packData(deg);
             return true;
 
         } else if (Math.abs(this._gyroPosZ - Math.abs(val3)) > thresh) {
             //Log.d(TAG, "Gyroscope z-axis pos change detected");
             this._gyroPosZ = Math.abs(val3);
-            if(isRecording) this.readings.addData(new SensorData(loc.getLatitude(), loc.getLongitude(), loc.getSpeed(), deg));
+            packData(deg);
             return true;
         }
 
@@ -364,29 +389,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         }
         else {
             buttonRecord.setText("Stop");
-
-            /*
-            call.enqueue(new Callback<Void>() {
-                @Override
-                public void onResponse(Call<Void> call, Response<Void> response) {
-                    if (response.code() == 200) {
-                        Toast.makeText(MainActivity.this,
-                                "Signed up successfully", Toast.LENGTH_LONG).show();
-                    } else if (response.code() == 400) {
-                        Toast.makeText(MainActivity.this,
-                                "Already registered", Toast.LENGTH_LONG).show();
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<Void> call, Throwable t) {
-                    Toast.makeText(MainActivity.this, t.getMessage(),
-                            Toast.LENGTH_LONG).show();
-                }
-            });
-            */
-
-
             // Reset readings class
             readings = new SensorReading();
         }
@@ -394,7 +396,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         isRecording = !isRecording;
     }
 
-    private void packData(int shakeDegree){
-        readings.addData(new SensorData(latitudeV, longitudeV, speedV, shakeDegree));
+    public void packData(int shakeDegree){
+        if(isRecording)readings.addData(new SensorData(latitudeV, longitudeV, speedV, shakeDegree));
     }
+
+    public Runnable helloRunnable = new Runnable() {
+        public void run() {
+            packData(0);
+        }
+    };
 }
