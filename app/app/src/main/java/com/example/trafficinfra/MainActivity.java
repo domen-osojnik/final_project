@@ -183,6 +183,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     latitudeV=location.getLatitude();
                     longitudeV=location.getLongitude();
                     speedV=location.getSpeed();
+                    loc=location;
                 }
             }
         };
