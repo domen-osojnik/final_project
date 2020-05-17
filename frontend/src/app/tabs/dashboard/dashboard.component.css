@@ -1,10 +1,14 @@
-.wrapper {
+.feed-panel{
+  width:20%;
+}
+
+.wrapper{
   display: flex;
   flex-direction: row;
+  justify-content: space-evenly;
+  padding: 40px;
 }
 
-.maps-wrapper {
-}
-
-.info-wrapper {
+.select-log{
+  
 }

@@ -1,1 +1,111 @@
-<p>drive-information works!</p>
+<div class="wrapper">
+  <mat-card>
+    <mat-card-title>
+      Pregled cestišča
+    </mat-card-title>
+    <mat-card-content>
+      <google-map width=900 height="800"></google-map>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="feed-panel">
+    <mat-card-title>
+      Zapisnik
+    </mat-card-title>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+      <mat-form-field>
+        <mat-label>Vožnja</mat-label>
+        <mat-select>
+          <mat-option *ngFor="let log of logs" [value]="log.value">
+            {{ log.value }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-divider style="margin-bottom: 30px;"></mat-divider>
+
+      <mat-table [dataSource]="dataSource">
+        <!-- Position Column -->
+        <ng-container matColumnDef="position">
+          <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.position }}
+          </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="weight">
+          <mat-header-cell *matHeaderCellDef> Weight </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.weight }} </mat-cell>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="symbol">
+          <mat-header-cell *matHeaderCellDef> Symbol </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.symbol }} </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+    </mat-card-content>
+  </mat-card>
+
+
+<mat-card class="feed-panel">
+    <mat-card-title>
+      Prometni znaki
+    </mat-card-title>
+    <mat-divider></mat-divider>
+    <mat-card-content>
+      <mat-form-field>
+        <mat-label>Vožnja</mat-label>
+        <mat-select>
+          <mat-option *ngFor="let log of logs" [value]="log.value">
+            {{ log.value }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-divider style="margin-bottom: 30px;"></mat-divider>
+
+      <mat-table [dataSource]="dataSource">
+        <!-- Position Column -->
+        <ng-container matColumnDef="position">
+          <mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.position }}
+          </mat-cell>
+        </ng-container>
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef> Name </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.name }} </mat-cell>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="weight">
+          <mat-header-cell *matHeaderCellDef> Weight </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.weight }} </mat-cell>
+        </ng-container>
+
+        <!-- Symbol Column -->
+        <ng-container matColumnDef="symbol">
+          <mat-header-cell *matHeaderCellDef> Symbol </mat-header-cell>
+          <mat-cell *matCellDef="let element"> {{ element.symbol }} </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+    </mat-card-content>
+  </mat-card>
+</div>

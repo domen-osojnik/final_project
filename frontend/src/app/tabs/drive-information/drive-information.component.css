@@ -1,0 +1,13 @@
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+  }
+
+  .feed-panel{
+    width:20%;
+  }
+
+  table {
+    width: 100%;
+  }

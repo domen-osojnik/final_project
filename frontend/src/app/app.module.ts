@@ -21,6 +21,8 @@ import { GoogleMapsModule } from '@angular/google-maps'
 import {MatCardModule} from '@angular/material/card';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
+import {MatSelectModule} from '@angular/material/select';
+import {MatTableModule} from '@angular/material/table';
 
 
 @NgModule({
@@ -47,7 +49,9 @@ import {MatListModule} from '@angular/material/list';
     GoogleMapsModule, 
     MatCardModule,
     MatDividerModule,
-    MatListModule
+    MatListModule,
+    MatSelectModule,
+    MatTableModule
   ],
   providers: [],
   bootstrap: [AppComponent]
