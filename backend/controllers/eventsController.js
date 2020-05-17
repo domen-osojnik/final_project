@@ -153,7 +153,7 @@ module.exports = {
                         });
                     }
 
-                    // Remember its id for reference when creating a recording
+                    // Remember its id for reference when creating a recording     
                     res.locals.ids.push(mongoose.Types.ObjectId(result._id));
                     i++;
                     if (req.body.events.length == i) next();
