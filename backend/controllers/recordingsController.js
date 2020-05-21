@@ -43,8 +43,6 @@ module.exports = {
                     error: err
                 });
             }
-
-
             return res.status(200).json({ "msg": "ok" });
         });
 
