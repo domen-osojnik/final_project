@@ -22,6 +22,7 @@ export interface SignData{
 }
 
 export interface ScrapeData{
-    type:number;
-    description:string;
+    roadmark:string;
+    desc:string;
+    type:string
 }
