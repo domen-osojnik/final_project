@@ -96,7 +96,8 @@ export class DriveInformationComponent implements OnInit {
 
       data.events.forEach(data => {
         if(data.degree == 1)data.degreeStatus = "Lajši tresljaj"
-        else if(data.degree == 2)data.degreeStatus = "Hujši tresljaj"
+        else if(data.degree == 3)data.degreeStatus = "Hujši tresljaj"
+        else if(data.degree == 2)data.degreeStatus = "Srednji tresljaj"
         else data.degreeStatus = "Normalno stanje"
         this.markers.push({position: new google.maps.LatLng(data.lat, data.long), title: data.degreeStatus, map:this.map});
       });
