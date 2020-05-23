@@ -55,8 +55,8 @@ export class DriveStatisticsComponent implements OnInit {
 
     this.data.events.forEach(data => {
         if(data.degree==1)easyDegreeCount++
-        if(data.degree==2)mediumDegreeCount++
-        if(data.degree==3)heavyDegreeCount++
+        else if(data.degree==2)mediumDegreeCount++
+        else if(data.degree==3)heavyDegreeCount++
         else normalStatus++
     });
 
