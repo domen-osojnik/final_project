@@ -1,0 +1,20 @@
+<div class="wrapper">
+  <mat-card>
+    <mat-card-title> Statistični podatki vožnje {{ data._id }} </mat-card-title>
+    <mat-card-content>
+        <div style="display: block">
+            <canvas baseChart
+                    [datasets]="chartDatasets"
+                    [labels]="chartLabels"
+                    [options]="chartOptions"
+                    [chartType]="chartType"
+                    [colors]="chartColors">
+
+            </canvas>
+          </div>
+          <button mat-button (click)="closeDialog()">
+            <span class="material-icons"> keyboard_backspace </span>Nazaj
+          </button>
+    </mat-card-content>
+  </mat-card>
+</div>

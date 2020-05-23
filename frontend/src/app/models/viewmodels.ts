@@ -26,7 +26,6 @@ export interface ScrapeData{
     desc:string;
     type:string
 }
-
 export interface TrafficRoadWork{
     roadmark:string;
     desc:string;
@@ -42,3 +41,8 @@ export interface TrafficOther{
     desc:string;
 }
 
+export interface Marker{
+    position:any;
+    title:string;
+    map:any;
+}
