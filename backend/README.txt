@@ -1,0 +1,1 @@
+npm install puppeteer ## prevelik modul za github, brez tega sccraper ne deluje
