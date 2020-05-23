@@ -50,13 +50,12 @@ public class SensorData implements Serializable {
     public String toString() {
         DateFormat dateFormat = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
 
-        return "SensorData{" +
-                "Date=" +   dateFormat.format(this.date) +
-                ", Lat=" + this.Lat  +
-                ", Long=" + this.Long +
-                ", Degree=" + this.shakeDegree +
-                ", Speed=" + this.speed +
-                '}';
+        return "{\"Date\"=\"" +   dateFormat.format(this.date) +
+                "\",\"Lat\"=\"" + this.Lat  +
+                "\",\"Long\"=\"" + this.Long +
+                "\",\"Degree\"=\"" + this.shakeDegree +
+                "\",\"Speed\"=\"" + this.speed +
+                "\"}";
     }
 
     // Check difference of dates of readings between two GyroReadings
