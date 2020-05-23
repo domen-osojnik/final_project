@@ -27,13 +27,15 @@ module.exports = {
      * recordingsController.create()
      */
     create: function (req, res) {
-        console.log("\n>... recieved sensor readings (" + req.body.events.length + ")");
+        
+        var data = JSON.parse(req.body.data);
         var i = 0;
-
-        console.log(req.body.events);
+       
+        //console.log(req.body.data.events);
         var recordings = new recordingsModel({
-            events: res.locals.ids,
-            date: req.body.date
+            events: res.locals.eventids,    // saved event ids -> controllers/eventsController/insert
+            images: res.locals.imgids,       // saved image ids -> controllers/imageController/insert
+            date: data.date,
         });
 
         recordings.save(function (err, recording) {
@@ -47,4 +49,17 @@ module.exports = {
         });
 
     },
+
+  
+   clear: function (req, res) {
+       recordingsModel.remove({}, function (err, result) {
+           if (err) {
+               return res.status(500).json({
+                   message: 'Error when deleting recordings.',
+                   error: err
+               });
+           }
+           return res.status(200).json({"msg":"ok"});
+       });
+   },
 };

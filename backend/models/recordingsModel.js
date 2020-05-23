@@ -7,6 +7,10 @@ var recordingsSchema = new Schema({
 		type: Schema.Types.ObjectId,
 		ref: 'events'
 	}],
+	'images': [{
+		type: Schema.Types.ObjectId,
+		ref: 'image'
+	}],
 });
 
 module.exports = mongoose.model('recordings', recordingsSchema);
