@@ -23,6 +23,9 @@ import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from '@angular/material/list';
 import {MatSelectModule} from '@angular/material/select';
 import {MatTableModule} from '@angular/material/table';
+import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatInputModule} from '@angular/material/input';
+import { SignTrackerComponent } from './tabs/sign-tracker/sign-tracker.component';
 
 
 @NgModule({
@@ -33,7 +36,8 @@ import {MatTableModule} from '@angular/material/table';
     DashboardComponent,
     DriveInformationComponent,
     DoesNotExistComponent,
-    InfoComponent
+    InfoComponent,
+    SignTrackerComponent
   ],
   imports: [
     BrowserModule,
@@ -51,7 +55,9 @@ import {MatTableModule} from '@angular/material/table';
     MatDividerModule,
     MatListModule,
     MatSelectModule,
-    MatTableModule
+    MatTableModule,
+    MatPaginatorModule,
+    MatInputModule
   ],
   providers: [],
   bootstrap: [AppComponent]

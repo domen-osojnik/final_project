@@ -31,7 +31,6 @@ var db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
 
 //CORS
-/*
 var cors = require('cors');
 var allowedOrigins = ['http://localhost:4200','http://localhost:3000',
                       'http://yourapp.com'];
@@ -49,7 +48,7 @@ app.use(cors({
     return callback(null, true);
   }
 }));
-*/
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

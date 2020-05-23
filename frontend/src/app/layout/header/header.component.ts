@@ -20,17 +20,23 @@ export class HeaderComponent implements OnInit {
             index: 0,
             image: 'help_outline'
         }, {
-            label: 'Dashboard',
+            label: 'Stanje na cestah',
             link: './dashboard',
             index: 1,
             
             image: 'commute'
         }, {
-            label: 'Road information',
+            label: 'Podatki senzorjev',
             link: './driveInfo',
             index: 2,
             image: 'track_changes'
-        }, 
+        } 
+        , {
+          label: 'Zaznavanje znakov',
+          link: './signTracker',
+          index: 3,
+          image: 'directions'
+      }, 
     ];
 }
 

@@ -26,3 +26,19 @@ export interface ScrapeData{
     desc:string;
     type:string
 }
+
+export interface TrafficRoadWork{
+    roadmark:string;
+    desc:string;
+}
+
+export interface TrafficRoadClosed{
+    roadmark:string;
+    desc:string;
+}
+
+export interface TrafficOther{
+    roadmark:string;
+    desc:string;
+}
+

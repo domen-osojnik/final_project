@@ -3,6 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { SensorData, ScrapeData, SignData, Log } from '../models/viewmodels';
 import { catchError, tap } from "rxjs/operators";
+import { throwError } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -30,7 +31,7 @@ export class ApiService {
 
        //Pridobivanje Logov
    public getScrapeData(): Observable<ScrapeData[]> {
-    return this.http.get<ScrapeData[]>(ApiService.dataHost + "scrapeData").pipe(
+    return this.http.get<ScrapeData[]>(ApiService.dataHost + "scrapedEvent").pipe(
       tap(() => {}),
       catchError(this.handleError("Scrape data rertrieval", "404 NOT FOUND"))
     );
@@ -46,7 +47,7 @@ export class ApiService {
         console.log(`status: ${err.status}, ${err.statusText}`);
         // errMsg = ...
       }
-      return Observable.throw(errMsg);
+      return throwError(errMsg);
     };
   }
 }

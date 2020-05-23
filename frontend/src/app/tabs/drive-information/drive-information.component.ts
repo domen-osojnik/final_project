@@ -11,9 +11,8 @@ export class DriveInformationComponent implements OnInit {
   dataSource:SensorData[] = [];
   logs: Log[] = [];
   displayedColumns: string[] = ['date', 'lat', 'long', 'speed', 'degreeStatus'];
+  logData:string="";
   
-  SENSOR_DATA: SensorData[] = [];
-
   constructor(private apiService:ApiService) { }
 
   ngOnInit(): void {
@@ -26,17 +25,20 @@ export class DriveInformationComponent implements OnInit {
 
   selectLog(id:string) {
     this.logs.forEach(log => {
+      this.logData = log.date;
       if(id == log._id)this.handleData(log);
     });
   }
 
   handleData(data:Log){
       data.events.forEach(data => {
-        if(data.degree == 0)data.degreeStatus = "Normalno stanje"
-        else if(data.degree == 1)data.degreeStatus = "Lajši tresljaj"
+        if(data.degree == 1)data.degreeStatus = "Lajši tresljaj"
         else if(data.degree == 2)data.degreeStatus = "Hujši tresljaj"
+        else data.degreeStatus = "Normalno stanje"
       });
 
       this.dataSource = data.events;
   }
+
+
 }
