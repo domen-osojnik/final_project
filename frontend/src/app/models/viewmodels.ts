@@ -22,6 +22,27 @@ export interface SignData{
 }
 
 export interface ScrapeData{
-    type:number;
-    description:string;
+    roadmark:string;
+    desc:string;
+    type:string
+}
+export interface TrafficRoadWork{
+    roadmark:string;
+    desc:string;
+}
+
+export interface TrafficRoadClosed{
+    roadmark:string;
+    desc:string;
+}
+
+export interface TrafficOther{
+    roadmark:string;
+    desc:string;
+}
+
+export interface Marker{
+    position:any;
+    title:string;
+    map:any;
 }
