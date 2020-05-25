@@ -12,6 +12,7 @@ var recordingsRouter = require('./routes/recordingsRoutes');
 var getRecordingsRouter = require('./routes/getRecordingsRoutes');
 var scrapedEventRouter = require('./routes/scrapedEventRoutes');
 var imageRouter = require('./routes/imageRoutes');
+var signRouter = require('./routes/signRoutes');
 
 var app = express();
 
@@ -73,6 +74,7 @@ app.use('/recordings', recordingsRouter);
 app.use('/getRecordings', getRecordingsRouter);
 app.use('/scrapedEvent', scrapedEventRouter);
 app.use('/images', imageRouter);
+app.use('/signs', signRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
