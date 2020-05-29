@@ -4,8 +4,10 @@ Darknet: https://pjreddie.com/darknet/install/
 
 
 ## Tutoriali
-- [labelImg](https://blog.francium.tech/custom-object-training-and-detection-with-yolov3-darknet-and-opencv-41542f2ff44e)
-- [darknet](https://www.arunponnusamy.com/preparing-custom-dataset-for-training-yolo-object-detector.html)
+- [labelImg: označevanje](https://www.arunponnusamy.com/preparing-custom-dataset-for-training-yolo-object-detector.html)
+- [darknet: izdelovanje učnega modela](https://blog.francium.tech/custom-object-training-and-detection-with-yolov3-darknet-and-opencv-41542f2ff44e)
+- [prepoznava predmetov](https://www.arunponnusamy.com/yolo-object-detection-opencv-python.html)
+- [python in Node](https://stackoverflow.com/questions/23450534/how-to-call-a-python-function-from-node-js)
 
 Posodobijo naj se vse konfiguracijske datoteke v /custom_data in /custom_data/cfg
 Slike se premaknejo v /custom_data/images
