@@ -15,8 +15,7 @@ router.get('/', eventsController.list);
 /*
  * POST
  */
-//router.post('/', eventsController.create);
-
+router.post('/', eventsController.insert);
 /*
  * PUT
  */

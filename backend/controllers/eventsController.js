@@ -13,7 +13,9 @@ module.exports = {
      */
     // Process recieved events
     insert: function (req, res, next) {
+        console.log(req);
         var data = JSON.parse(req.body.data);
+        console.log(data);
         console.log("\n>... recieved sensor readings (" + data.events.length + ")");
         res.locals.eventids = new Array();
         var i = 0;
@@ -66,6 +68,7 @@ module.exports = {
      */
     list: function (req, res) {
         eventsModel.find({}, (err, result) => {
+            console.log(result);
             return res.status(200).json(result);
         })
     },

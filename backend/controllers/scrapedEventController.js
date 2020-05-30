@@ -15,7 +15,7 @@ module.exports = {
      * insert them to DB
      */
     recieve: function (req, res) {
-    
+        console.log(req);
         console.log(">... POST: /scrapedEvents -- Recieved " + req.body.num + " events");
 
         var i = 0;
