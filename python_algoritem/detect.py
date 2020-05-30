@@ -7,7 +7,7 @@ parser = argparse.ArgumentParser(add_help=False)
 parser.add_argument("--image", default='images/stop_sign37.jpg', help="image for prediction")
 parser.add_argument("--config", default='cfg/yolov3.cfg', help="YOLO config path")
 parser.add_argument("--weights", default='yolov3.weights', help="YOLO weights path")
-parser.add_argument("--names", default='data/coco.names', help="class names path")
+parser.add_argument("--names", default='data/classes.names', help="class names path")
 args = parser.parse_args()
 
 CONF_THRESH, NMS_THRESH = 0.5, 0.5
