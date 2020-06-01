@@ -83,8 +83,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     // Class for app-backend communication
     private Retrofit retrofit;
     private RetrofitInterface retrofitInterface;
-    // TODO: Hostat nekje
-    private String BASE_URL = "http://192.168.1.111:3000"; // (local ip)
+    private String BASE_URL = "https://final-project-backend-nodejs.herokuapp.com";
 
     // Recording state:
     // if true then save sensor readings
