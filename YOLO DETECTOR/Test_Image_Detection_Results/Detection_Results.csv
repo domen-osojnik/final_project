@@ -1,0 +1,7 @@
+image,image_path,xmin,ymin,xmax,ymax,label,confidence,x_size,y_size
+neprednostni-34.jpg,C:\Users\DOMEN\Desktop\TrainYourOwnYOLO\Data\Source_Images\Test_Images\neprednostni-34.jpg,649,240,744,319,1,0.3248578608036041,1280,720
+neprednostni-34.jpg,C:\Users\DOMEN\Desktop\TrainYourOwnYOLO\Data\Source_Images\Test_Images\neprednostni-34.jpg,775,106,1073,369,0,0.9497551321983337,1280,720
+omejitev06.jpg,C:\Users\DOMEN\Desktop\TrainYourOwnYOLO\Data\Source_Images\Test_Images\omejitev06.jpg,625,162,1052,304,2,0.3328491449356079,1250,932
+omejitev06.jpg,C:\Users\DOMEN\Desktop\TrainYourOwnYOLO\Data\Source_Images\Test_Images\omejitev06.jpg,625,355,816,617,2,0.8728660941123962,1250,932
+omejitev06.jpg,C:\Users\DOMEN\Desktop\TrainYourOwnYOLO\Data\Source_Images\Test_Images\omejitev06.jpg,625,162,1052,304,1,0.5145135521888733,1250,932
+stop_sign24.jpg,C:\Users\DOMEN\Desktop\TrainYourOwnYOLO\Data\Source_Images\Test_Images\stop_sign24.jpg,35,22,105,82,3,0.8545802235603333,274,184
