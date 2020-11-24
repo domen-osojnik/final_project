@@ -1,6 +1,0 @@
-Oddano:
-- app: izvorna koda mobilne aplikacije, ki podatke (senzorske meritve in slike) pošilja na zaledni del,
-- povezava (github): 
-
-https://github.com/domen-osojnik/final_project
-
