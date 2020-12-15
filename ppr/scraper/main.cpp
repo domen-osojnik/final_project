@@ -69,8 +69,11 @@ int main(int argc, char** argv) {
         MPI_Send(&st_vozil.front(), st_vozil.size(), MPI_FLOAT, WORKER_1, TAG, MPI_COMM_WORLD);
         
         // TODO
+        int size2 = hitrost.size();
         // Send the size of vector first
+        MPI_Send(&size2, 1, MPI_INT, WORKER_1, TAG, MPI_COMM_WORLD);
         // Send to second process...
+        MPI_Send(&hitrost.front(), hitrost.size(), MPI_FLOAT, WORKER_1, TAG, MPI_COMM_WORLD);
         
         
         // TODO
@@ -86,7 +89,7 @@ int main(int argc, char** argv) {
         MPI_Recv(&result1, 1, MPI_INT, WORKER_1, TAG, MPI_COMM_WORLD, &processStatus);
         
         // Handle second result (from worker 2)
-        //MPI_Recv(&result2, 1, MPI_INT, WORKER_2, TAG, MPI_COMM_WORLD, &processStatus);
+        MPI_Recv(&result2, 1, MPI_FLOAT, WORKER_2, TAG, MPI_COMM_WORLD, &processStatus);
         
         // Handle third result (from worker 3)
         //MPI_Recv(&result3, 1, MPI_INT, WORKER_3, TAG, MPI_COMM_WORLD, &processStatus);
@@ -97,6 +100,7 @@ int main(int argc, char** argv) {
         
         cout << "Stevilo vseh avtomobilov na cesti v pretekli uri v Sloveniji : " << result1 << endl;
         //TODO OSTALI REZULTATI...
+        cout << "Povprecna hitrost na cestah v pretekli uri v Sloveniji : " << result2 << endl;
         //...
         
         cout << "Pretekel cas: " << time << endl;
@@ -117,6 +121,22 @@ int main(int argc, char** argv) {
         
         // Send result back to master
         MPI_Send(&sum, 1, MPI_INT, MASTER, TAG, MPI_COMM_WORLD);
+    }
+        if (processRank == 2) {
+        int size;
+        MPI_Recv(&size, 1, MPI_INT, MASTER, TAG, MPI_COMM_WORLD, &processStatus);
+        vector<float> avgSpeed;
+        avgSpeed.resize(size);
+        MPI_Recv(&avgSpeed[0], size, MPI_FLOAT, MASTER, TAG, MPI_COMM_WORLD, &processStatus);
+        float average;
+        
+        // Calculate result
+        for (int i = 0; i<size; i++) {
+            average+=avgSpeed[i];
+        }
+        average/=size;
+        // Send result back to master
+        MPI_Send(&average, 1, MPI_FLOAT, MASTER, TAG, MPI_COMM_WORLD);
     }
 
     MPI_Finalize();
