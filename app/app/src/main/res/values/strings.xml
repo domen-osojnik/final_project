@@ -9,4 +9,6 @@
     <string name="gyro_y">gyro y:</string>
     <string name="gyro_z">"gyro z: "</string>
     <string name="recordingStatus">Standby</string>
+    <string name="locationInfo">Your current location </string>
+    <string name="locationPlaceholder">Your current location: </string>
 </resources>

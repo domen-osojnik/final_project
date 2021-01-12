@@ -16,6 +16,8 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
@@ -54,6 +56,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
@@ -123,6 +127,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView gyroPosZ;
     private TextView latitude;
     private TextView longitude;
+    private TextView locationTextBox;
     private TextView speed;
     private TextView consoleEvents;
     private TextView consoleActions;
@@ -232,6 +237,19 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                     longitudeV = location.getLongitude();
                     speedV = location.getSpeed();
                     loc = location;
+
+                    try {
+
+                        Geocoder geo = new Geocoder(MainActivity.this, Locale.getDefault());
+                        List<Address> addresses = geo.getFromLocation(latitudeV, longitudeV, 1);
+                        if (((List) addresses).isEmpty()) {
+                            locationTextBox.setText("Waiting for Location");
+                        } else {
+                            locationTextBox.setText(addresses.get(0).getAddressLine(0));
+                        }
+                    } catch (Exception ex) {
+                        log("Unable to retrieve info for loc");
+                    }
                 }
             }
         };
@@ -246,6 +264,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         longitude = (TextView) this.findViewById(R.id.longtitude);
         latitude = (TextView) this.findViewById(R.id.latitude);
         speed = (TextView) this.findViewById(R.id.speed);
+        locationTextBox = (TextView) this.findViewById(R.id.locationText);
+
         mFrameLayout = (FrameLayout) findViewById(R.id.cameraPreview);
         consoleEvents = (TextView) findViewById(R.id.consoleEvents);
         consoleActions = (TextView) findViewById(R.id.consoleActions);
@@ -258,7 +278,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
         // Start saving new event every x seconds
         handler.postDelayed(runnable = new Runnable() {
-        public void run() { handler.postDelayed(runnable, 10000); packData(0);  captureImage();} }, 10000);
+            public void run() {
+                handler.postDelayed(runnable, 10000);
+                packData(0);
+                captureImage();
+            }
+        }, 10000);
 
         super.onResume();
 
@@ -272,6 +297,16 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroPosInit = false;
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, gyro, SensorManager.SENSOR_DELAY_NORMAL);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
     }
 
@@ -369,7 +404,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroPosZ.setText("0");
     }
 
-    // display the current x,y,z accelerometer values
+    // display the current x,y,z accelerometer values and also location
     public void displayCurrentValues() {
         currentX.setText("Acc x: " + Float.toString(deltaX));
 
@@ -377,6 +412,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         gyroPosX.setText("X : " + _gyroPosX + " rad/s");
         gyroPosY.setText("Y : " + _gyroPosY + " rad/s");
         gyroPosZ.setText("Z : " + _gyroPosZ + " rad/s");
+
+        //TODO: Set text for location
     }
 
 
@@ -437,8 +474,6 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
      *  Send data to server
      */
     public void sendToServer() {
-
-
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MultipartBody.MIXED);
         for (int i = 0; i < readings.filesCount(); i++) {
