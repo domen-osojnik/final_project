@@ -205,7 +205,8 @@ int main(void)
   			GPIOE->BSRR = 0x2000;
   		}
 		*/
-      /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
+
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

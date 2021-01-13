@@ -6,99 +6,139 @@ using System.Threading.Tasks;
 using System.Net.Http;
 using System.Configuration;
 using System.IO.Ports;
-
+using System.Threading;
+using Microsoft.Win32;
+using System.Management;
 
 namespace USBListenerService
 {
+
+
     class USBListenerService
     {
+        // const
+        private const int BUFFSIZE = 100;
 
+        // App.config
+        private readonly string ProductString = ConfigurationManager.AppSettings["ProductString"];
+        private readonly string Path = ConfigurationManager.AppSettings["Path"];
+        private readonly string Url = ConfigurationManager.AppSettings["Url"];
+        private readonly int MessageLength = Int32.Parse(ConfigurationManager.AppSettings["MessageLength"]);
+
+        // Globs
+        private Thread listenerThread;
         private HttpClient client;
-        private string url;
-        private string path;
+        private SerialPort port = new SerialPort();
+        private char[] buf = new char[BUFFSIZE];
 
-        public void InitClient()
+        // Print message on success or failure
+        public void PrintMessage(string message, bool success)
         {
-            client = new HttpClient();
-           
+            if (success)
+            {
+                Console.ForegroundColor = ConsoleColor.Green;
+            }
+            else
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+            }
+            Console.WriteLine(message);
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
-   
-        public void Start ()
+        // Find and return device com from all connected devices list
+        public string getDeviceCOM()
         {
+            foreach (var device in Win32DeviceMgmt.GetAllCOMPorts())
+            {
+                if (device.bus_description == ProductString)
+                {
+                    return device.name;
+                }
+            }
+            return "";
+        }
 
-            char[] buf = new char[100];
-            SerialPort port = new SerialPort();
-            port.PortName = "COM3";
+        // Initialize client 
+        public bool InitClient ()
+        {
+            client = new HttpClient();
+            return true;
+        }
+
+        // Block main thread until an STM device connects
+        public string getDeviceCOMWhenAvailable()
+        {
+            string device = "";
+            while (true)
+            {
+                device = getDeviceCOM();
+                if (device != "")
+                {
+                    PrintMessage($"Device Connected On {device}", true);
+                    return device;
+                }
+                else
+                {
+                    // Wait 5 sec
+                    Thread.Sleep(5000);
+                }
+            }
+        }
+
+        // Listen for Messages of given COM
+        public void Listen ()
+        {
+            // Init
+            port.PortName = getDeviceCOMWhenAvailable();
             port.Open();
-
-
-            string charsStr;
-
-            // byte buffer[100];
 
             while (true)
             {
-                while (port.BytesToRead == 0);
-                port.Read(buf, 0, 27);
-                charsStr = new string(buf);
-                Console.WriteLine(charsStr);
+                // Block while no new messages
+                try
+                {
+                    while (port.BytesToRead == 0) ;
 
+                    // Read recieved message
+                    port.Read(buf, 0, MessageLength);
+                    string charsStr = new string(buf);
+                    Console.WriteLine(charsStr);
+                }
+                catch (System.IO.IOException ex) 
+                {
+                    PrintMessage("Device Disconnected", false);
+                    port.Close();
+                    port.PortName = getDeviceCOMWhenAvailable();
+                    port.Open();
+                    continue;
+                }
             }
-
-
-
-            /*
-            string readData = "";
-            do {
-                readData = port.ReadLine();
-            } while (readData == "");
-            
-            Console.WriteLine(readData);
-            */
-
-
-            /*
-            using (var sp = new System.IO.Ports.SerialPort("COM3", 115200, System.IO.Ports.Parity.None, 8, System.IO.Ports.StopBits.One))
-            {
-                sp.Open();
-
-   
-
-                var readData = sp.ReadLine();
-                Console.WriteLine(readData);
-            }
-            */
-
-            // Kako najti usb porte: 
-            /*
-            string[] ports = SerialPort.GetPortNames();
-            Console.WriteLine("The following serial ports were found:");
-            foreach (string port in ports)
-            {
-                Console.WriteLine(port);
-            }
-            */
-
-
-
-            /*
-            try
-            {
-                url = ConfigurationManager.AppSettings["url"];
-                path = ConfigurationManager.AppSettings["path"];
-                InitClient();
-            } catch (Exception ex)
-            {
-
-            }
-            */
-
+          
         }
 
+        // Starting point 
+        public void Start ()
+        {
+            if (InitClient())
+            {
+                // Start Thread
+                listenerThread = new Thread(Listen);
+                listenerThread.IsBackground = true;
+                listenerThread.Start();
+            }
+            else
+            {
+                Stop();
+            }
+        }
+
+        // Exit point
         public void Stop ()
         {
 
         }
+
+
     }
 }
