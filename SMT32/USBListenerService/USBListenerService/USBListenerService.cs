@@ -1,23 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net.Http;
 using System.Configuration;
 using System.IO.Ports;
 using System.Threading;
-using Microsoft.Win32;
-using System.Management;
+using Newtonsoft.Json;
+using System.Text.RegularExpressions;
+using System.Text;
 
 namespace USBListenerService
 {
-
-
     class USBListenerService
     {
-        // const
-        private const int BUFFSIZE = 100;
+        private static readonly Regex rx = new Regex(@"N|W|S|E|NW|NE|SE|SW");
+        private static readonly Random random = new Random();
+        private static readonly string uuid = "1234567890abcdefghijklmnopqrstuvwxyz";
+        private static readonly int BUFFSIZE = 100;
 
         // App.config
         private readonly string ProductString = ConfigurationManager.AppSettings["ProductString"];
@@ -30,6 +27,41 @@ namespace USBListenerService
         private HttpClient client;
         private SerialPort port = new SerialPort();
         private char[] buf = new char[BUFFSIZE];
+        private string json;
+        private StringContent data;
+
+
+        // Class packet
+        internal class Packet
+        {
+            public string imu_id { get; set; }
+            public string date { get; set; }
+            public string direction { get; set; }
+
+            public void SwitchId()
+            {
+                this.imu_id = "";
+                for (int i = 0; i < uuid.Length; i++)
+                {
+                    this.imu_id += uuid[random.Next(0, uuid.Length - 1)];
+                }
+            }
+
+            public void SetDirection(char one, char two)
+            {
+                this.direction = "";
+                this.direction = (two == '0') ? $"{one} + {two}" : $"{one}";
+            }
+
+            public bool isValid()
+            {
+                return rx.IsMatch(this.direction);
+            }
+        }
+
+
+        private Packet packet = new Packet();
+
 
         // Print message on success or failure
         public void PrintMessage(string message, bool success)
@@ -60,10 +92,20 @@ namespace USBListenerService
         }
 
         // Initialize client 
-        public bool InitClient ()
+        public bool InitClient()
         {
-            client = new HttpClient();
-            return true;
+            try
+            {
+                client = new HttpClient();
+                PrintMessage("Client initialized", true);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                PrintMessage("Failed to initialize client", false);
+                return false;
+            }
+
         }
 
         // Block main thread until an STM device connects
@@ -75,6 +117,7 @@ namespace USBListenerService
                 device = getDeviceCOM();
                 if (device != "")
                 {
+                    packet.SwitchId();
                     PrintMessage($"Device Connected On {device}", true);
                     return device;
                 }
@@ -87,25 +130,47 @@ namespace USBListenerService
         }
 
         // Listen for Messages of given COM
-        public void Listen ()
+        public void Listen()
         {
             // Init
             port.PortName = getDeviceCOMWhenAvailable();
-            port.Open();
+
+            try
+            {
+                port.Open();
+            }
+            catch (Exception ex)
+            {
+                PrintMessage("Device not functioning. Restart device. Restart service.", false);
+                Stop();
+            }
 
             while (true)
             {
-                // Block while no new messages
+
                 try
                 {
-                    while (port.BytesToRead == 0) ;
+                    // Block while no new messages
+                    while (port.IsOpen && port.BytesToRead == 0) ;
 
-                    // Read recieved message
+                    // Read && Send message
                     port.Read(buf, 0, MessageLength);
-                    string charsStr = new string(buf);
-                    Console.WriteLine(charsStr);
+                    if (buf[0] == 'A' && buf[1] == 'B')
+                    {
+                        packet.date = DateTime.Now.ToString("yyyy-mm-ddTHH:mm:ss");
+                        packet.SetDirection(buf[2], buf[3]);
+
+                        if (packet.isValid())
+                        {
+                            json = JsonConvert.SerializeObject(packet);
+                            Console.WriteLine($"SENT: {json}");
+                            data = new StringContent(json, Encoding.UTF8, "application/json");
+                            //client.PostAsync(Url, data);
+                        }
+                    }
+
                 }
-                catch (System.IO.IOException ex) 
+                catch (System.IO.IOException ex)
                 {
                     PrintMessage("Device Disconnected", false);
                     port.Close();
@@ -114,11 +179,11 @@ namespace USBListenerService
                     continue;
                 }
             }
-          
+
         }
 
         // Starting point 
-        public void Start ()
+        public void Start()
         {
             if (InitClient())
             {
@@ -134,9 +199,10 @@ namespace USBListenerService
         }
 
         // Exit point
-        public void Stop ()
+        public void Stop()
         {
-
+            client.Dispose();
+            listenerThread.Abort();
         }
 
 

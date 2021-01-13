@@ -24,9 +24,9 @@ namespace USBListenerService
                 x.SetDescription("STM 32 USB Listener Service");
                 x.SetDisplayName("STM 32 USB Listener Service");
                 x.SetServiceName("STM32USBListenerService");
-            });                                                             //10
+            });
 
-            var exitCode = (int)Convert.ChangeType(rc, rc.GetTypeCode());  //11
+            var exitCode = (int)Convert.ChangeType(rc, rc.GetTypeCode()); 
             Environment.ExitCode = exitCode;
         }
     }
