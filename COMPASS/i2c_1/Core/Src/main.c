@@ -104,6 +104,10 @@ void initLSM303DLHC()
   i2c1_pisiRegister(0x1E, 0x00, 0xC);  // 7.5hz
   i2c1_pisiRegister(0x1E, 0x01, 0x20);  // privzeto
   i2c1_pisiRegister(0x1E, 0x02, 0x00);
+
+// inicializiraj pospeskometer
+i2c1_pisiRegister(0x19, 0x20, 0x47);  // zbudi pospeskometer in omogoci osi IN nastavite odzivnost senzorja na 50Hz  Normal / low-power mode (50 Hz) 0 1 0 0
+i2c1_pisiRegister(0x19, 0x23, 0x98);  // nastavi posodobitev samo ko se prebere vrednost ter visoko locljivost IN na +-4g (f1 f0 na 0 1)
 }
 
 
@@ -197,12 +201,13 @@ int main(void)
 	  // X
 	  i2c1_beriRegistre(0x1E,  0x03,(uint8_t*)&x1, 1);
 	  i2c1_beriRegistre(0x1E,  0x04,(uint8_t*)&x2, 1);
-	  // Y
-	  i2c1_beriRegistre(0x1E,  0x07,(uint8_t*)&y1, 1);
-	  i2c1_beriRegistre(0x1E,  0x08,(uint8_t*)&y2, 1);
 	  // Z
 	  i2c1_beriRegistre(0x1E,  0x05,(uint8_t*)&z1, 1);
 	  i2c1_beriRegistre(0x1E,  0x06,(uint8_t*)&z2, 1);
+	  // Y
+	  i2c1_beriRegistre(0x1E,  0x07,(uint8_t*)&y1, 1);
+	  i2c1_beriRegistre(0x1E,  0x08,(uint8_t*)&y2, 1);
+
 
 	  uint16_t x,y,z;
 	  // sestavi 16bitni int
@@ -231,6 +236,23 @@ int main(void)
 	  if (heading < 0) {
 		heading = 360 + heading;
 	  }
+
+	  // ACC MERITVE
+		  // Preberi x y z vrednosti
+      i2c1_beriRegistre(0x19, 0x28,(uint16_t*)&meritev[2], 2);
+      // Y
+      i2c1_beriRegistre(0x19, 0x2A,(uint16_t*)&meritev[3], 2);
+      // Z
+      i2c1_beriRegistre(0x19, 0x2C,(uint16_t*)&meritev[4], 2);
+
+      // https://ozzmaker.com/accelerometer-to-g/
+      float range = 0.122f;
+	  // Convert to ASCII
+
+	  float xAcc, yAcc, zAcc;
+	  xAcc = (float)(meritev[2] * range) / 1000.0f;
+	  xAcc = (float)(meritev[3]* range) / 1000.0f;
+	  zAcc = (float)(meritev[4]* range) / 1000.0f;
 
 	  // S
 	  if(heading <= 22.5f || heading >= 337.5f)
