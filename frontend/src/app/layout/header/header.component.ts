@@ -30,12 +30,12 @@ export class HeaderComponent implements OnInit {
             link: './driveInfo',
             index: 2,
             image: 'track_changes'
-        } 
-        , {
-          label: 'Zaznavanje znakov',
-          link: './signTracker',
+        },
+        {
+          label: 'IMU',
+          link: './IMU',
           index: 3,
-          image: 'directions'
+          image: 'sensors'
       }, 
     ];
 }

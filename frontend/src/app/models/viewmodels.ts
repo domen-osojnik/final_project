@@ -46,3 +46,9 @@ export interface Marker{
     title:string;
     map:any;
 }
+
+export interface IMUData{
+    imu_id : string;
+    date: Date;
+    direction : string;
+}

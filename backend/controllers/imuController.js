@@ -15,8 +15,8 @@ const imuModel = require('../models/imuModel.js');
      insert : function (req, res, next)
      {
          // Parse recieved data
-         var data = JSON.parse(req.body.data);
-         console.log(data, "Recieved IMU data");
+        var data = req.body;
+        console.log(data, "Recieved IMU data");
 
         var imuReading = new imuModel(
             {

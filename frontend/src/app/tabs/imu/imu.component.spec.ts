@@ -1,20 +1,20 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SignTrackerComponent } from './sign-tracker.component';
+import { IMUComponent } from './imu.component';
 
-describe('SignTrackerComponent', () => {
-  let component: SignTrackerComponent;
-  let fixture: ComponentFixture<SignTrackerComponent>;
+describe('IMUComponent', () => {
+  let component: IMUComponent;
+  let fixture: ComponentFixture<IMUComponent>;
 
   beforeEach(async(() => {
     TestBed.configureTestingModule({
-      declarations: [ SignTrackerComponent ]
+      declarations: [ IMUComponent ]
     })
     .compileComponents();
   }));
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SignTrackerComponent);
+    fixture = TestBed.createComponent(IMUComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

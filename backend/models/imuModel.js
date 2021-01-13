@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 var Schema   = mongoose.Schema;
 
 var imuSchema = new Schema({
-    'imu_id' : Schema.Types.ObjectId,
+    'imu_id' : String,
     'date' : Date,
     'direction' : String,
 });

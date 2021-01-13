@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { SensorData, ScrapeData, SignData, Log } from '../models/viewmodels';
+import { SensorData, ScrapeData, SignData, Log, IMUData } from '../models/viewmodels';
 import { catchError, tap } from "rxjs/operators";
 import { throwError } from 'rxjs';
 
@@ -35,6 +35,19 @@ export class ApiService {
       tap(() => {}),
       catchError(this.handleError("Scrape data rertrieval", "404 NOT FOUND"))
     );
+  }
+
+  public getImuData(): Observable<IMUData[]> {
+    return this.http.get<IMUData[]>(ApiService.dataHost + "imu").pipe(
+      tap(() => {}),
+      catchError(this.handleError("IMU data rertrieval", "404 NOT FOUND"))
+    );
+  }
+
+  public insertImuData(imuData : IMUData){
+    this.http.post<IMUData>(ApiService.dataHost + "imu",  imuData ).subscribe(data => {
+      console.log(data);
+  })
   }
 
   //Error handling

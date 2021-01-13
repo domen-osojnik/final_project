@@ -25,11 +25,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatInputModule } from '@angular/material/input';
-import { SignTrackerComponent } from './tabs/sign-tracker/sign-tracker.component';
 
 import { MatDialogModule } from '@angular/material/dialog';
 import { DriveStatisticsComponent } from './tabs/drive-information/drive-statistics/drive-statistics.component';
 import { ChartsModule } from 'ng2-charts';
+import { IMUComponent } from './tabs/imu/imu.component';
 @NgModule({
   declarations: [
     AppComponent,
@@ -39,8 +39,8 @@ import { ChartsModule } from 'ng2-charts';
     DriveInformationComponent,
     DoesNotExistComponent,
     InfoComponent,
-    SignTrackerComponent,
     DriveStatisticsComponent,
+    IMUComponent,
   ],
   imports: [
     BrowserModule,
