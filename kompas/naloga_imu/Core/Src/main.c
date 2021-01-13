@@ -281,7 +281,7 @@ int main(void)
   while (1)
   {
 	  if(isr_acc) {
-		  i2c1_beriRegister(0x19, 0x28, (uint8_t*)&rawACC[0], 6);
+		  i2c1_beriRegistre(0x19, 0x28, (uint8_t*)&rawACC[0], 6);
 
 		  rawLatestIMU[1] = rawACC[0];
 		  rawLatestIMU[2] = rawACC[1];
@@ -290,7 +290,7 @@ int main(void)
 		  isr_acc = 0;
 	  }
 	  if(isr_gyr) {
-		  spi1_beriRegister(0x28, (uint8_t*)&rawGYR[0], 6);
+		  spi1_beriRegistre(0x28, (uint8_t*)&rawGYR[0], 6);
 
 		  rawLatestIMU[4] = rawGYR[0];
 		  rawLatestIMU[5] = rawGYR[1];
@@ -300,18 +300,18 @@ int main(void)
 	  }
 
 	  if(isr_mag) {
-		  i2c1_beriRegister(0x1E, 0x03, (uint8_t*)&rawMAG[0], 6);
+		  i2c1_beriRegistre(0x1E, 0x03, (uint8_t*)&rawMAG[0], 6);
 
 		  rawLatestIMU[7] = rawMAG[0];
 		  rawLatestIMU[8] = rawMAG[1];
-		  rawLatestIMU[9] = rawmAG[2];
+		  rawLatestIMU[9] = rawMAG[2];
 
 		  isr_mag = 0;
 	  }
 
 	  if(switch_usb) {
 		  if(switch_mode) {
-			  CDC_TRANSMIT_FS((uint8_t*)&rawLatestIMU, 20);
+			  CDC_Transmit_FS((uint8_t*)&rawLatestIMU, 20);
 		  } else {
 			  gyr_x = ((float)rawLatestIMU[4] / 32767.0 * 250.0 - GYR_X_BIAS) * M_PI / 180.0;
 			  gyr_y = ((float)rawLatestIMU[5] / 32767.0 * 250.0 - GYR_X_BIAS) * M_PI / 180.0;
