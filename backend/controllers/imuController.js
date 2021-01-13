@@ -20,6 +20,7 @@ const imuModel = require('../models/imuModel.js');
 
         var imuReading = new imuModel(
             {
+                imu_id: data.imu_id,
                 date : data.date,
                 direction : data.direction
             }

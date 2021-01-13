@@ -7,6 +7,13 @@
         <mat-card-content>
             <mat-table [dataSource]="dataSourceIMU">
 
+              <ng-container matColumnDef="imu_id">
+                <mat-header-cell *matHeaderCellDef> ID </mat-header-cell>
+                <mat-cell *matCellDef="let element">
+                  {{ element.imu_id }}
+                </mat-cell>
+              </ng-container>
+
                 <ng-container matColumnDef="date">
                     <mat-header-cell *matHeaderCellDef> Datum </mat-header-cell>
                     <mat-cell *matCellDef="let element">

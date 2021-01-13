@@ -14,7 +14,7 @@ export class IMUComponent implements OnInit {
 
   dataSourceIMU:any;
 
-  displayedColumns: string[] = ['date', 'direction'];
+  displayedColumns: string[] = ['imu_id', 'date', 'direction'];
 
   @ViewChild('imuDataPaginator') paginator: MatPaginator;
 
