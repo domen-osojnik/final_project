@@ -1,15 +1,16 @@
 var express = require('express');
 var router = express.Router();
-var imageController = require('../controllers/imageController.js');
+var imuController = require('../controllers/imuController.js');
 
 /*
  * GET
+ * Get list of inserted sensor data
  */
 router.get('/', imuController.list);
 
 /*
  * POST
- *  Insert - add img. path to db, store img on server
+ *  Insert - add IMU data in form of {id, date, direction} to database
  */
 router.post('/', imuController.insert);
 

@@ -22,7 +22,7 @@ var mongoose = require('mongoose');
 //Set up default mongoose connection
 var mongoDB = 'mongodb+srv://admin:admin@finalproject-r59cw.mongodb.net/final_project';
 //var mongoDB = '127.0.0.1:3000'
-mongoose.connect(mongoDB);
+mongoose.connect(mongoDB, { useNewUrlParser: true, useUnifiedTopology: true });
 // Get Mongoose to use the global promise library
 mongoose.Promise = global.Promise;
 //Get the default connection
@@ -62,8 +62,8 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 //scraper
-var scrape = require('./scraper');
-scrape();
+//var scrape = require('./scraper');
+//scrape();
 
 /*
  *  routers

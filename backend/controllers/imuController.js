@@ -1,4 +1,3 @@
-var imageModel = require('../models/imuModel.js');
 var mongoose = require('mongoose');
 const imuModel = require('../models/imuModel.js');
 
@@ -45,7 +44,9 @@ const imuModel = require('../models/imuModel.js');
      * imuController.list()
      */
     list: function (req, res) {
-        recordingsModel.find().sort({date:-1}).populate('imu').exec(function (err, imudata) {
+        console.log("MM");
+        
+        imuModel.find().sort({date:-1}).populate('imu').exec(function (err, imudata) {
             if (err) {
                 return res.status(500).json({
                     message: 'Error when getting imu data.',
