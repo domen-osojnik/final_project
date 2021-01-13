@@ -19,10 +19,11 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "usb_device.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "usbd_cdc_if.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,8 +45,6 @@ I2C_HandleTypeDef hi2c1;
 
 SPI_HandleTypeDef hspi1;
 
-PCD_HandleTypeDef hpcd_USB_FS;
-
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -55,13 +54,43 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_SPI1_Init(void);
-static void MX_USB_PCD_Init(void);
 /* USER CODE BEGIN PFP */
+
+uint8_t i2c1_pisiRegister(uint8_t, uint8_t, uint8_t);
+void i2c1_beriRegistre(uint8_t, uint8_t, uint8_t*, uint8_t);
+void initLSM303DLHC(void);
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+
+char jsonBuffer[1000] = {"{\"msg\": \"okay, i work\"}\n\r"};
+int8_t xa [2] = {}, ya [2] = {}, za [2] = {};
+int16_t buffer[] = {0xaaab,0,0,0,0};
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+uint8_t i2c1_write(uint8_t naprava, uint8_t reg, uint8_t podatek)
+{
+  naprava <<= 1;
+  return HAL_I2C_Mem_Write(&hi2c1, naprava, reg, I2C_MEMADD_SIZE_8BIT, &podatek, 1, 10);
+}
+
+void i2c1_read(uint8_t naprava, uint8_t reg, uint8_t* podatek, uint8_t dolzina)
+{
+  if ((dolzina > 1)&&(naprava == 0x19))
+    reg |= 0x80;
+  naprava <<= 1;
+  HAL_I2C_Mem_Read(&hi2c1, naprava, reg, I2C_MEMADD_SIZE_8BIT, podatek, dolzina, dolzina);
+}
+
+void initLSM303DLHC()
+{
+  i2c1_write(0x1e, 0x4f, 0x73);// Izbira senzorja
+  HAL_Delay(100);
+  i2c1_write(0x19, 0x20, 0x47);// 50Hz, ZYX enabled
+  i2c1_write(0x19, 0x23, 0x98);// BlockDataUpdate, +-4g, HighRes
+  i2c1_write(0x19, 0x22, 0x10);// Interrupt INT1 DRDY
+}
 
 /* USER CODE END 0 */
 
@@ -95,17 +124,88 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_SPI1_Init();
-  MX_USB_PCD_Init();
+  MX_USB_DEVICE_Init();
   /* USER CODE BEGIN 2 */
-
+  __HAL_I2C_ENABLE(&hi2c1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-    /* USER CODE END WHILE */
+  /*
+     int16_t packetNo = 0;
+     int8_t btnCtrl = 0;
+     int8_t modeCtrl = 0;
+     GPIOE->BRR = 0xFF00;
 
+     char packetNoBuffer[20] = {};
+     char jsonBuffer [200] = {};
+     char floatBuffer [20] = {};
+
+     double value = 8000 / (pow(2,16) - 1);
+*/
+    while (1)	// CTRL + SHIFT + F
+    {
+    	//GPIOE->BSRR = 0x400;
+
+    	CDC_Transmit_FS((uint8_t*)&jsonBuffer, strlen(jsonBuffer));
+    	HAL_Delay(1000);
+
+
+    	/*
+  	  	// Kontrola gumbov
+  		if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) && btnCtrl == 0) {
+  			GPIOE->BRR = 0xFF00;
+  			if (++modeCtrl >= 4) modeCtrl = 0;
+  			btnCtrl = 1;
+  		} else if (!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) && btnCtrl == 1) {
+  			btnCtrl = 0;
+  		}
+
+  		HAL_Delay(100);
+  		i2c1_read(0x19, 0x28, (uint8_t*)&xa[0], 4);
+  		i2c1_read(0x19, 0x29, (uint8_t*)&xa[1], 8);
+  		buffer[2] = *((int16_t*)xa);
+
+  		i2c1_read(0x19, 0x2a, (uint8_t*)&ya[0], 4);
+  		i2c1_read(0x19, 0x2b, (uint8_t*)&ya[1], 8);
+  		buffer[3] = *((int16_t*)ya);
+
+  		i2c1_read(0x19, 0x2c, (uint8_t*)&za[0], 4);
+  		i2c1_read(0x19, 0x2d, (uint8_t*)&za[1], 8);
+  		buffer[4] = *((int16_t*)za);
+
+  		if (modeCtrl == 1) {
+  			GPIOE->BSRR = 0x1000;
+  			buffer[1] = packetNo++;
+  			CDC_Transmit_FS((uint8_t*)&buffer, 10);
+
+  		} else if (modeCtrl == 3) {
+  			GPIOE->BSRR = 0x4000;
+  			strcat(jsonBuffer, "{\"ACC\":");
+  			snprintf(packetNoBuffer, sizeof packetNoBuffer, "%d", packetNo++);
+  			strcat(jsonBuffer,packetNoBuffer);
+  			strcat(jsonBuffer, ", \"X\":");
+  			snprintf(floatBuffer, sizeof floatBuffer, "%.3f", ((float)buffer[2] * value)/1000);
+  			strcat(jsonBuffer, floatBuffer);
+  			floatBuffer[0] = '\0';
+  			strcat(jsonBuffer, ", \"Y\":");
+  			snprintf(floatBuffer, sizeof floatBuffer, "%.3f", ((float)buffer[3] * value)/1000);
+  			strcat(jsonBuffer, floatBuffer);
+  			floatBuffer[0] = '\0';
+  			strcat(jsonBuffer, ", \"Z\":");
+  			snprintf(floatBuffer, sizeof floatBuffer, "%.3f", ((float)buffer[4] * value)/1000);
+  			strcat(jsonBuffer, floatBuffer);
+  			strcat(jsonBuffer, "}\n\r");
+  			CDC_Transmit_FS((uint8_t*)&jsonBuffer, strlen(jsonBuffer));
+  			packetNoBuffer[0] = '\0';
+  			jsonBuffer[0] = '\0';
+  			floatBuffer[0] = '\0';
+  		}
+  		else {
+  			GPIOE->BSRR = 0x2000;
+  		}
+		*/
+      /* USER CODE END WHILE */
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -174,7 +274,7 @@ static void MX_I2C1_Init(void)
 
   /* USER CODE END I2C1_Init 1 */
   hi2c1.Instance = I2C1;
-  hi2c1.Init.Timing = 0x2000090E;
+  hi2c1.Init.Timing = 0x0000020B;
   hi2c1.Init.OwnAddress1 = 0;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
   hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
@@ -241,37 +341,6 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
-
-}
-
-/**
-  * @brief USB Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_USB_PCD_Init(void)
-{
-
-  /* USER CODE BEGIN USB_Init 0 */
-
-  /* USER CODE END USB_Init 0 */
-
-  /* USER CODE BEGIN USB_Init 1 */
-
-  /* USER CODE END USB_Init 1 */
-  hpcd_USB_FS.Instance = USB;
-  hpcd_USB_FS.Init.dev_endpoints = 8;
-  hpcd_USB_FS.Init.speed = PCD_SPEED_FULL;
-  hpcd_USB_FS.Init.phy_itface = PCD_PHY_EMBEDDED;
-  hpcd_USB_FS.Init.low_power_enable = DISABLE;
-  hpcd_USB_FS.Init.battery_charging_enable = DISABLE;
-  if (HAL_PCD_Init(&hpcd_USB_FS) != HAL_OK)
-  {
-    Error_Handler();
-  }
-  /* USER CODE BEGIN USB_Init 2 */
-
-  /* USER CODE END USB_Init 2 */
 
 }
 
