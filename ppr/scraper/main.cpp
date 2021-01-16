@@ -104,9 +104,9 @@ int main(int argc, char** argv) {
         
         cout << "Stevilo vseh avtomobilov na cesti v pretekli uri v Sloveniji : " << round(result1) << endl;
         //TODO OSTALI REZULTATI...
-        cout << "Povprecna hitrost na cestah v pretekli uri v Sloveniji : " << round(result2) << "km/h" << endl;
+        cout << "Povprecna hitrost na cestah v pretekli uri v Sloveniji : " << round(result2) << " km/h" << endl;
         //...
-        cout << "Povprecen razmik med avti na cesti v pretekli uri v Sloveniji : " << round(result3) << "m" << endl;
+        cout << "Povprecen razmik med avti na cesti v pretekli uri v Sloveniji : " << round(result3) << " s" << endl;
         
         cout << "Pretekel cas: " << time << endl;
     }
