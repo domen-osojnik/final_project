@@ -344,8 +344,7 @@ int main(void)
 		heading = 360 + heading;
 	  }
 
-	  // ACC MERITVE
-		  // Preberi x y z vrednosti
+	  /*
       i2c1_beriRegistre(0x19, 0x28,(uint16_t*)&meritev[2], 2);
       // Y
       i2c1_beriRegistre(0x19, 0x2A,(uint16_t*)&meritev[3], 2);
@@ -360,7 +359,7 @@ int main(void)
 	  xAcc = (float)(meritev[2] * range) / 1000.0f;
 	  xAcc = (float)(meritev[3]* range) / 1000.0f;
 	  zAcc = (float)(meritev[4]* range) / 1000.0f;
-
+	*/
 
 	  // S
 	  if(heading <= 22.5f || heading >= 337.5f)
