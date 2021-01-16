@@ -1,0 +1,9 @@
+.title{
+    display: flex;
+    flex-flow: row;
+    color: white;
+    align-items: center;
+    justify-content: space-evenly;
+    width: 100px;
+    font-size: 20px;
+}

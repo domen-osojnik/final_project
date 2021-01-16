@@ -4,6 +4,7 @@
 #include <mpi.h>
 #include <sstream>
 #include <iterator>
+#include <cmath>
 
 using namespace std;
 

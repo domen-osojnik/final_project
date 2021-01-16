@@ -1,0 +1,15 @@
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 20px;
+  }
+
+  .description{
+      width: 45%;
+      height: 90%;
+  }
+
+  .table_card{
+      width: 45%;
+  }

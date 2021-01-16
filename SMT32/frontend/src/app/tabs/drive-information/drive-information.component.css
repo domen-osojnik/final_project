@@ -1,0 +1,29 @@
+.wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    padding: 20px;
+  }
+
+  .feed-panel{
+    width:40%;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  #map {
+    height: 700px;
+    width: 700px;
+   }
+
+   .details{
+     display: flex;
+     flex-direction: column;
+     margin-bottom: 20px;
+   }
+
+   .details-btn{
+     width: fit-content;
+   }
