@@ -87,7 +87,8 @@ int main(int argc, char** argv) {
         // TODO
         // Handle the results
         
-        int result1, result2, result3;
+        int result1;
+        float result2, result3;
         // Handle first result (from worker 1)
         MPI_Recv(&result1, 1, MPI_INT, WORKER_1, TAG, MPI_COMM_WORLD, &processStatus);
         
@@ -101,11 +102,11 @@ int main(int argc, char** argv) {
         // Ko dobi vse rezultate, jih izpise
         float time = float(clock() - start) / CLOCKS_PER_SEC;
         
-        cout << "Stevilo vseh avtomobilov na cesti v pretekli uri v Sloveniji : " << result1 << endl;
+        cout << "Stevilo vseh avtomobilov na cesti v pretekli uri v Sloveniji : " << round(result1) << endl;
         //TODO OSTALI REZULTATI...
-        cout << "Povprecna hitrost na cestah v pretekli uri v Sloveniji : " << result2 << endl;
+        cout << "Povprecna hitrost na cestah v pretekli uri v Sloveniji : " << round(result2) << "km/h" << endl;
         //...
-        cout << "Povprecen razmik med avti na cesti v pretekli uri v Sloveniji : " << result2 << endl;
+        cout << "Povprecen razmik med avti na cesti v pretekli uri v Sloveniji : " << round(result3) << "m" << endl;
         
         cout << "Pretekel cas: " << time << endl;
     }
@@ -116,7 +117,7 @@ int main(int argc, char** argv) {
         vector<float> numOfCars;
         numOfCars.resize(size);
         MPI_Recv(&numOfCars[0], size, MPI_FLOAT, MASTER, TAG, MPI_COMM_WORLD, &processStatus);
-        int sum;
+        int sum= 0;
         
         // Calculate result
         for (int i = 0; i<size; i++) {
@@ -132,13 +133,14 @@ int main(int argc, char** argv) {
         vector<float> avgSpeed;
         avgSpeed.resize(size);
         MPI_Recv(&avgSpeed[0], size, MPI_FLOAT, MASTER, TAG, MPI_COMM_WORLD, &processStatus);
-        float average;
+        float average = 0.0;
         
         // Calculate result
         for (int i = 0; i<size; i++) {
-            average+=avgSpeed[i];
+            average+=(float)avgSpeed[i];
         }
         average/=size;
+        
         // Send result back to master
         MPI_Send(&average, 1, MPI_FLOAT, MASTER, TAG, MPI_COMM_WORLD);
     }
@@ -149,11 +151,11 @@ int main(int argc, char** argv) {
         vector<float> avgRazmik;
         avgRazmik.resize(size);
         MPI_Recv(&avgRazmik[0], size, MPI_FLOAT, MASTER, TAG, MPI_COMM_WORLD, &processStatus);
-        float average;
+        float average = 0.0;
         
         // Calculate result
         for (int i = 0; i<size; i++) {
-            average+=avgRazmik[i];
+            average+=(float)avgRazmik[i];
         }
         average/=size;
         // Send result back to master
