@@ -280,7 +280,6 @@ int main(void)
 
 	  uint16_t x,y,z;
 	  // sestavi 16bitni int
-
 	  meritev[2] = ((x1 << 8) | (x2 & 0xff));
 	  meritev[3] = ((y1 << 8) | (y2 & 0xff));
 	  meritev[4] = ((z1 << 8) | (z2 & 0xff));
