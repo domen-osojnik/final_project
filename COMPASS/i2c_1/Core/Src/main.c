@@ -224,6 +224,7 @@ int main(void)
 
   int16_t meritev[5];
   meritev[0] = 0xaaab;// glava za zaznamek zacetek paketa
+  int16_t buffer[3] = {0,0,0};
 
   initLSM303DLHC();
 
@@ -238,6 +239,13 @@ int main(void)
   int8_t btnCtrl = 0;
   int8_t debug = 0;
   HAL_TIM_Base_Start_IT(&htim3);
+
+  int8_t xa [2] = {}, ya [2] = {}, za [2] = {};
+  char packetNoBuffer[20] = {};
+  char jsonBuffer [200] = {};
+  char floatBuffer [20] = {};
+
+  double value = 8000 / (pow(2,16) - 1);
 
   /* USER CODE END 2 */
 
@@ -266,6 +274,7 @@ int main(void)
 
 	  uint8_t x1, x2, y1,y2, z1,z2;
 
+	  // BERI MAGNETOMETER
 	  // Preberi x y z vrednosti po 8 bitov , high low
 	  // X
 	  i2c1_beriRegistre(0x1E,  0x03,(uint8_t*)&x1, 1);
@@ -277,14 +286,33 @@ int main(void)
 	  i2c1_beriRegistre(0x1E,  0x07,(uint8_t*)&y1, 1);
 	  i2c1_beriRegistre(0x1E,  0x08,(uint8_t*)&y2, 1);
 
+	  // BERI POSPEŠKOMETER
+	  i2c1_beriRegistre(0x19, 0x28, (uint8_t*) &xa[0], 4);
+	  i2c1_beriRegistre(0x19, 0x29, (uint8_t*) &xa[1], 8);
+		buffer[0] = *((int16_t*) xa);
+
+		i2c1_beriRegistre(0x19, 0x2a, (uint8_t*) &ya[0], 4);
+		i2c1_beriRegistre(0x19, 0x2b, (uint8_t*) &ya[1], 8);
+		buffer[1] = *((int16_t*) ya);
+
+		i2c1_beriRegistre(0x19, 0x2c, (uint8_t*) &za[0], 4);
+		i2c1_beriRegistre(0x19, 0x2d, (uint8_t*) &za[1], 8);
+		buffer[2] = *((int16_t*) za);
+
+
+		float ro = asin((buffer[0] * value) / 1000 * -1);   // enacba 10
+		float gama = asin(((buffer[1] * value) / 1000)/cos(ro));
 
 	  uint16_t x,y,z;
 	  // sestavi 16bitni int
+
 	  meritev[2] = ((x1 << 8) | (x2 & 0xff));
 	  meritev[3] = ((y1 << 8) | (y2 & 0xff));
 	  meritev[4] = ((z1 << 8) | (z2 & 0xff));
 
+
 	  float xv, yv, zv;
+
 
 	  xv = (float)meritev[2] / 1100.0f;
 	  yv = (float)meritev[3] / 1100.0f;
@@ -298,7 +326,18 @@ int main(void)
 	  float Pi = 3.14159;
 
 	  // Calculate the angle of the vector y,x -> also GAUS to microteslas
-	  float heading = (atan2((yv/100.0f), (xv/100.0f)) * 180) / Pi;
+
+	  float mX2 = xv*cos(ro)+zv*sin(ro);
+	  float mY2 = xv*sin(gama)*sin(ro)+yv*cos(gama)-zv*sin(gama)*cos(ro);
+
+	  /*
+	  float ro = asin(xv * -1);
+	  float gama = asin(yv/cos(ro));
+
+	  xv = kX*cos(ro)+kZ*sin(ro);
+	  mY2=kX*sin(gama)*sin(ro)+kY*cos(gama)-kZ*sin(gama)*cos(ro);
+		*/
+	  float heading = (atan2((mY2/100.0f), (mX2/100.0f)) * 180) / Pi;
 
 	  // Normalize to 0-360
 	  if (heading < 0) {
@@ -470,11 +509,35 @@ int main(void)
 
 		// DEBUG MODE
 		if (debug == 1) {
+			/*
 			int strlen = snprintf(NULL, 0, "{Compass Heading: %.3f}\n\r", (float) heading) + 1;
 			char *stringToSend = malloc(strlen);
 			snprintf(stringToSend, strlen, "{Compass Heading: %.3f}\n\r", (float) heading);
 			memset(toReturn, 0, sizeof(toReturn));
 			CDC_Transmit_FS(stringToSend, strlen);
+			*/
+			strcat(jsonBuffer, "{\"ACC\":");
+			snprintf(packetNoBuffer, sizeof packetCount, "%d", packetCount++);
+			strcat(jsonBuffer, packetNoBuffer);
+			strcat(jsonBuffer, ", \"X\":");
+			snprintf(floatBuffer, sizeof floatBuffer, "%.3f",
+					((float) buffer[0] * value) / 1000);
+			strcat(jsonBuffer, floatBuffer);
+			floatBuffer[0] = '\0';
+			strcat(jsonBuffer, ", \"Y\":");
+			snprintf(floatBuffer, sizeof floatBuffer, "%.3f",
+					((float) buffer[1] * value) / 1000);
+			strcat(jsonBuffer, floatBuffer);
+			floatBuffer[0] = '\0';
+			strcat(jsonBuffer, ", \"Z\":");
+			snprintf(floatBuffer, sizeof floatBuffer, "%.3f",
+					((float) buffer[2] * value) / 1000);
+			strcat(jsonBuffer, floatBuffer);
+			strcat(jsonBuffer, "}\n\r");
+			CDC_Transmit_FS((uint8_t*) &jsonBuffer, strlen(jsonBuffer));
+			packetNoBuffer[0] = '\0';
+			jsonBuffer[0] = '\0';
+			floatBuffer[0] = '\0';
 		}
 
 
