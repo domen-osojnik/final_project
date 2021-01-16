@@ -3,13 +3,10 @@ package com.example.trafficinfra;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.hardware.Sensor;
@@ -19,15 +16,10 @@ import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Vibrator;
-import android.provider.MediaStore;
-import android.view.SurfaceHolder;
-import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -41,10 +33,6 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import android.util.Log;
 import android.widget.Toast;
@@ -53,17 +41,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
@@ -120,6 +101,12 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private float _gyroPosY;
     private float _gyroPosZ;
 
+    // Compass sensor values
+    private Sensor magnetometer;
+    float[] mGravity;
+    float[] mGeomagnetic;
+    Float azimut;
+
     // Views - UI
     private TextView currentX;
     private TextView gyroPosX;
@@ -128,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
     private TextView latitude;
     private TextView longitude;
     private TextView locationTextBox;
+    private TextView directionTextBox;
     private TextView speed;
     private TextView consoleEvents;
     private TextView consoleActions;
@@ -253,6 +241,10 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 }
             }
         };
+
+
+        // COMPASS
+        magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
     }
 
     public void initializeViews() {
@@ -265,6 +257,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         latitude = (TextView) this.findViewById(R.id.latitude);
         speed = (TextView) this.findViewById(R.id.speed);
         locationTextBox = (TextView) this.findViewById(R.id.locationText);
+        directionTextBox = (TextView) this.findViewById(R.id.directionText);
 
         mFrameLayout = (FrameLayout) findViewById(R.id.cameraPreview);
         consoleEvents = (TextView) findViewById(R.id.consoleEvents);
@@ -296,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
         // Start sensor measurements
         gyroPosInit = false;
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, gyro, SensorManager.SENSOR_DELAY_NORMAL);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
@@ -325,11 +319,13 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
 
     }
 
+
     @Override
     public void onSensorChanged(SensorEvent event) {
         // Triggered event
         Sensor sensor = event.sensor;
         if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            mGravity = event.values;
             // clean current values
             displayCleanValues();
             // display the current x,y,z accelerometer values
@@ -360,6 +356,8 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
             if(deltaY > 20)packData(2);
             if(deltaZ > 20)packData(2);
             */
+
+
         } else if (sensor.getType() == Sensor.TYPE_GYROSCOPE) {
             // Event was triggered by gyroscope
             // Help: www.youtube.com/watch?v=8Veyw4e1MX0
@@ -391,7 +389,46 @@ public class MainActivity extends AppCompatActivity implements SensorEventListen
                 if (checkGyro4Bump(event.values[0], event.values[1], event.values[2], 1, 0.2f))
                     return;
             }
+        } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            mGeomagnetic = event.values;
+            if (mGravity != null && mGeomagnetic != null) {
+                float R[] = new float[9];
+                float I[] = new float[9];
+                boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
+                if (success) {
+                    float orientation[] = new float[3];
+                    SensorManager.getOrientation(R, orientation);
+                    azimut = orientation[0]; // orientation contains: azimut, pitch and roll
+                    int azimutDeg = (int) (azimut*180/Math.PI);
+                    if(azimutDeg<0) {
+                        azimutDeg+=360;
+                    }
+                    directionTextBox.setText(String.valueOf(returnLookingDirection(azimutDeg)));
+                }
+            }
         }
+
+    }
+
+    public String returnLookingDirection(int azimut) {
+        if(azimut>337.5 || azimut<22.5) {
+            return "S";
+        } else if(azimut>=22.5 && azimut<67.5) {
+            return "SV";
+        } else if(azimut>=67.5 && azimut<112.5) {
+            return "V";
+        } else if(azimut>=112.5 && azimut<157.5) {
+            return "JV";
+        } else if(azimut>=157.5 && azimut<202.5) {
+            return "J";
+        } else if(azimut>=202.5 && azimut<247.5) {
+            return "JZ";
+        } else if(azimut>=247.5 && azimut<292.5) {
+            return "Z";
+        } else if(azimut>=292.5 && azimut<337.5) {
+            return "SZ";
+        }
+        return "";
     }
 
     public void displayCleanValues() {
