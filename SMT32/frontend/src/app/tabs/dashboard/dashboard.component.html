@@ -1,0 +1,97 @@
+<div class="wrapper">
+     <mat-form-field>
+        
+        <mat-label style="align-items: center;"><span class="material-icons" style="margin-right: 5px; size: 5px;">
+            search
+          </span>Iskanje..</mat-label>
+        <input matInput (keyup)="applyFilter($event)" placeholder="Ex. ium">
+      </mat-form-field>
+
+      <div class="table-cards">
+
+    <mat-card class="feed-panel">
+        <mat-card-subtitle>
+            Dela na cesti
+        </mat-card-subtitle>
+
+                       <!-- TABELA -->
+                       <div>
+                        <mat-table [dataSource]="dataSourceWorkData"> 
+                         <ng-container matColumnDef="roadmark">
+                           <mat-header-cell *matHeaderCellDef> Lokacija / označba </mat-header-cell>
+                           <mat-cell *matCellDef="let element">
+                             {{ element.roadmark }}
+                           </mat-cell>
+                         </ng-container>
+                 
+                         <ng-container matColumnDef="desc">
+                           <mat-header-cell *matHeaderCellDef> Opis dogodka </mat-header-cell>
+                           <mat-cell *matCellDef="let element">
+                             {{ element.desc }}
+                           </mat-cell>
+                         </ng-container>
+                 
+                         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                         <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+                       </mat-table>
+                       <mat-paginator #workRoadDataPaginator [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+                     </div>
+    </mat-card>
+    <mat-card class="feed-panel">
+        <mat-card-subtitle>
+            Zastoji/Zaprte ceste
+        </mat-card-subtitle>
+
+                       <!-- TABELA -->
+                       <div>
+                        <mat-table [dataSource]="dataSourceClosedRoad"> 
+                         <ng-container matColumnDef="roadmark">
+                           <mat-header-cell *matHeaderCellDef> Lokacija / označba </mat-header-cell>
+                           <mat-cell *matCellDef="let element">
+                             {{ element.roadmark }}
+                           </mat-cell>
+                         </ng-container>
+                 
+                         <ng-container matColumnDef="desc">
+                           <mat-header-cell *matHeaderCellDef> Opis dogodka </mat-header-cell>
+                           <mat-cell *matCellDef="let element">
+                             {{ element.desc }}
+                           </mat-cell>
+                         </ng-container>
+                 
+                         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                         <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+                       </mat-table>
+                       <mat-paginator #closedRoadDataPaginator [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+                     </div>
+    </mat-card>
+    <mat-card class="feed-panel">
+        <mat-card-subtitle>
+            Ostalo
+        </mat-card-subtitle>
+
+               <!-- TABELA -->
+               <div>
+       <mat-table [dataSource]="dataSourceOtherData"> 
+        <ng-container matColumnDef="roadmark">
+          <mat-header-cell *matHeaderCellDef> Lokacija / označba </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.roadmark }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="desc">
+          <mat-header-cell *matHeaderCellDef> Opis dogodka </mat-header-cell>
+          <mat-cell *matCellDef="let element">
+            {{ element.desc }}
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+      </mat-table>
+      <mat-paginator #otherRoadDataPaginator [pageSizeOptions]="[5, 10, 20]"></mat-paginator>
+    </div>
+    </mat-card>
+</div>
+</div>
