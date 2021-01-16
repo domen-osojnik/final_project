@@ -11,7 +11,7 @@ namespace USBListenerService
 {
     class USBListenerService
     {
-        private static readonly Regex rx = new Regex(@"N|W|S|E|NW|NE|SE|SW");
+        private static readonly Regex rx = new Regex(@"\bS\b|\bJ\b|\bV\b|\bZ\b|\bSV\b|\bSZ\b|\bJV\b|\bJZ\b");
         private static readonly Random random = new Random();
         private static readonly string uuid = "1234567890abcdefghijklmnopqrstuvwxyz";
         private static readonly int BUFFSIZE = 100;
@@ -49,8 +49,7 @@ namespace USBListenerService
 
             public void SetDirection(char one, char two)
             {
-                this.direction = "";
-                this.direction = (two == '0') ? $"{one} + {two}" : $"{one}";
+                this.direction = (one == '0') ? $"{two}" : $"{one}{two}";
             }
 
             public bool isValid()
@@ -157,15 +156,18 @@ namespace USBListenerService
                     port.Read(buf, 0, MessageLength);
                     if (buf[0] == 'A' && buf[1] == 'B')
                     {
-                        packet.date = DateTime.Now.ToString("yyyy-mm-ddTHH:mm:ss");
+                        packet.date = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss");
+                        //packet.date = DateTime.Now.ToString();
                         packet.SetDirection(buf[2], buf[3]);
 
                         if (packet.isValid())
                         {
                             json = JsonConvert.SerializeObject(packet);
-                            Console.WriteLine($"SENT: {json}");
                             data = new StringContent(json, Encoding.UTF8, "application/json");
-                            //client.PostAsync(Url, data);
+                            client.PostAsync($"{Url}{Path}", data);
+
+                            // TODO: comment out
+                            Console.WriteLine($"SENT: {json}");
                         }
                     }
 

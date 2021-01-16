@@ -47,6 +47,8 @@ I2C_HandleTypeDef hi2c1;
 
 SPI_HandleTypeDef hspi1;
 
+TIM_HandleTypeDef htim3;
+
 /* USER CODE BEGIN PV */
 
 /* USER CODE END PV */
@@ -56,8 +58,9 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_TIM3_Init(void);
 /* USER CODE BEGIN PFP */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim);
 uint8_t i2c1_pisiRegister(uint8_t, uint8_t, uint8_t);
 void i2c1_beriRegistre(uint8_t, uint8_t, uint8_t*, uint8_t);
 void initLSM303DLHC(void);
@@ -66,7 +69,20 @@ void initLSM303DLHC(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+char resBuff[4] = {"ABAA"};
+int8_t dir = -1;
 
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+
+  // preveri ali je prekinitev klicana iz casovnika 3
+  if (htim->Instance == TIM3) {
+	  if (dir > -1) {
+		  mapDirectionToChar();
+		  CDC_Transmit_FS(resBuff, 4);
+	  }
+  }
+
+}
 /*** Using magnetometer calibration algorithm ***/
 
 uint8_t i2c1_pisiRegister(uint8_t naprava, uint8_t reg, uint8_t podatek)
@@ -133,6 +149,41 @@ void TurnOffPrevious(int PIN){
 	}
 }
 
+void setResBuf(char one, char two) {
+	resBuff[2] = one;
+	resBuff[3] = two;
+}
+
+void mapDirectionToChar() {
+	switch (dir) {
+	case 0:
+		setResBuf('0','S');
+		break;
+	case 1:
+		setResBuf('S','V');
+		break;
+	case 2:
+		setResBuf('0','V');
+		break;
+	case 3:
+		setResBuf('J','V');
+		break;
+	case 4:
+		setResBuf('0','J');
+		break;
+	case 5:
+		setResBuf('J','Z');
+		break;
+	case 6:
+		setResBuf('0','Z');
+		break;
+	case 7:
+		setResBuf('S','Z');
+		break;
+	}
+}
+
+
 /* USER CODE END 0 */
 
 /**
@@ -166,6 +217,7 @@ int main(void)
   MX_I2C1_Init();
   MX_SPI1_Init();
   MX_USB_DEVICE_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
   __HAL_I2C_ENABLE(&hi2c1);
@@ -175,6 +227,7 @@ int main(void)
 
   initLSM303DLHC();
 
+
   char toReturn[250] = {0};
   int toggleCount = 0;
   int16_t packetCount = 0; // stevec klikov
@@ -182,12 +235,28 @@ int main(void)
 
   int prevLight = 0;
 
+  int8_t btnCtrl = 0;
+  int8_t debug = 0;
+  HAL_TIM_Base_Start_IT(&htim3);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+	  // Debug opcija ON/OFF
+	  // ON (0): send 4B float
+	  // OFF(1): send JSON string
+
+	  if (HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) && debug == 0) {
+		  debug = 1;
+	  }
+	  else if (!HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_0) && debug == 1) {
+		  debug = 0;
+	  }
+
 	  HAL_Delay(100);
 
 
@@ -254,6 +323,7 @@ int main(void)
 	  xAcc = (float)(meritev[3]* range) / 1000.0f;
 	  zAcc = (float)(meritev[4]* range) / 1000.0f;
 
+
 	  // S
 	  if(heading <= 22.5f || heading >= 337.5f)
       {
@@ -268,6 +338,8 @@ int main(void)
 			  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_13, GPIO_PIN_SET);
 			  prevLight = 13;
 		  }
+
+		  dir = 0;
       }
 	  // SV
 	  if(heading <= 67.5f && heading >= 22.5f)
@@ -283,6 +355,8 @@ int main(void)
 			  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_14, GPIO_PIN_SET);
 			  prevLight = 14;
 		  }
+
+		  dir = 1;
       }
 
 	  // V
@@ -299,6 +373,8 @@ int main(void)
 			  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_15, GPIO_PIN_SET);
 			  prevLight = 15;
 		  }
+
+		  dir = 2;
       }
 
 	  // JV
@@ -315,6 +391,8 @@ int main(void)
 			  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_8, GPIO_PIN_SET);
 			  prevLight = 8;
 		  }
+
+		  dir = 3;
       }
 
 	  // J
@@ -331,6 +409,8 @@ int main(void)
 			  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_9, GPIO_PIN_SET);
 			  prevLight = 9;
 		  }
+
+		  dir = 4;
       }
 
 	  // JZ
@@ -347,6 +427,8 @@ int main(void)
 			  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_10, GPIO_PIN_SET);
 			  prevLight = 10;
 		  }
+
+		  dir = 5;
       }
 
 	  // Z
@@ -363,6 +445,8 @@ int main(void)
 			  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_11, GPIO_PIN_SET);
 			  prevLight = 11;
 		  }
+
+		  dir = 6;
       }
 
 	  // SZ
@@ -379,17 +463,21 @@ int main(void)
 			  HAL_GPIO_WritePin(GPIOE, GPIO_PIN_12, GPIO_PIN_SET);
 			  prevLight = 12;
 		  }
+
+		  dir = 7;
       }
 
-	  int strlen = snprintf(NULL, 0 , "{Compass Heading: %.3f}\n\r",
-			  (float)heading);
-	  char* stringToSend = malloc (strlen);
-	  snprintf(stringToSend, strlen , "{Compass Heading: %.3f}\n\r",
-			  (float)heading);
+		packetCount++;
 
-	  packetCount++;
-	  CDC_Transmit_FS(stringToSend, strlen);
-	  memset(toReturn, 0, sizeof(toReturn));
+		// DEBUG MODE
+		if (debug == 1) {
+			int strlen = snprintf(NULL, 0, "{Compass Heading: %.3f}\n\r", (float) heading) + 1;
+			char *stringToSend = malloc(strlen);
+			snprintf(stringToSend, strlen, "{Compass Heading: %.3f}\n\r", (float) heading);
+			memset(toReturn, 0, sizeof(toReturn));
+			CDC_Transmit_FS(stringToSend, strlen);
+		}
+
 
     /* USER CODE END WHILE */
 
@@ -528,6 +616,51 @@ static void MX_SPI1_Init(void)
   /* USER CODE BEGIN SPI1_Init 2 */
 
   /* USER CODE END SPI1_Init 2 */
+
+}
+
+/**
+  * @brief TIM3 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_TIM3_Init(void)
+{
+
+  /* USER CODE BEGIN TIM3_Init 0 */
+
+  /* USER CODE END TIM3_Init 0 */
+
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 47999;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 999;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
+
+  /* USER CODE END TIM3_Init 2 */
 
 }
 

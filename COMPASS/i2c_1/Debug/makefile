@@ -61,8 +61,8 @@ all: main-build
 main-build: i2c_1.elf secondary-outputs
 
 # Tool invocations
-i2c_1.elf: $(OBJS) $(USER_OBJS) C:\Users\Domen\STM32CubeIDE\workspace_1.4.0\i2c_1\STM32F303VCTX_FLASH.ld
-	arm-none-eabi-gcc -o "i2c_1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Domen\STM32CubeIDE\workspace_1.4.0\i2c_1\STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="i2c_1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
+i2c_1.elf: $(OBJS) $(USER_OBJS) C:\Users\Alen\Desktop\test\COMPASS\i2c_1\STM32F303VCTX_FLASH.ld
+	arm-none-eabi-gcc -o "i2c_1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Alen\Desktop\test\COMPASS\i2c_1\STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="i2c_1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

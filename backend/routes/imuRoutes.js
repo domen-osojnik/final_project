@@ -14,4 +14,10 @@ router.get('/', imuController.list);
  */
 router.post('/', imuController.insert);
 
+
+/*
+ * DELETE
+ */
+router.delete('/', imuController.remove);
+
 module.exports = router;

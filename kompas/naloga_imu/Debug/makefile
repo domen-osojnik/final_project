@@ -50,8 +50,8 @@ naloga_imu.bin \
 all: naloga_imu.elf secondary-outputs
 
 # Tool invocations
-naloga_imu.elf: $(OBJS) $(USER_OBJS) C:\Users\bog\STM32CubeIDE\workspace_1.4.0\naloga_imu\STM32F303VCTX_FLASH.ld
-	arm-none-eabi-gcc -o "naloga_imu.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\bog\STM32CubeIDE\workspace_1.4.0\naloga_imu\STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="naloga_imu.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+naloga_imu.elf: $(OBJS) $(USER_OBJS) C:\Users\Alen\Desktop\test\kompas\naloga_imu\STM32F303VCTX_FLASH.ld
+	arm-none-eabi-gcc -o "naloga_imu.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\Alen\Desktop\test\kompas\naloga_imu\STM32F303VCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="naloga_imu.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

@@ -22,3 +22,16 @@ C:\Users\Alen\OneDrive - Univerza v Mariboru\FERI\3_letnik\ProjektV2\SMT32\USBLi
 C:\Users\Alen\OneDrive - Univerza v Mariboru\FERI\3_letnik\ProjektV2\SMT32\USBListenerService\USBListenerService\bin\Debug\Newtonsoft.Json.xml
 C:\Users\Alen\OneDrive - Univerza v Mariboru\FERI\3_letnik\ProjektV2\SMT32\USBListenerService\USBListenerService\bin\Debug\Topshelf.xml
 C:\Users\Alen\OneDrive - Univerza v Mariboru\FERI\3_letnik\ProjektV2\SMT32\USBListenerService\USBListenerService\obj\Debug\USBListenerService.csproj.CopyComplete
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\bin\Debug\USBListenerService.exe.config
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\bin\Debug\USBListenerService.exe
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\bin\Debug\USBListenerService.pdb
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\bin\Debug\System.Runtime.InteropServices.RuntimeInformation.dll
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\bin\Debug\Topshelf.dll
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\bin\Debug\Topshelf.xml
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\obj\Debug\USBListenerService.csprojAssemblyReference.cache
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\obj\Debug\USBListenerService.csproj.CoreCompileInputs.cache
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\obj\Debug\USBListenerService.csproj.CopyComplete
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\obj\Debug\USBListenerService.exe
+C:\Users\Alen\Desktop\test\SMT32\USBListenerService\USBListenerService\obj\Debug\USBListenerService.pdb
